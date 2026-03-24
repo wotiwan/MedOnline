@@ -1,0 +1,21 @@
+logging:
+  level:
+    root: WARN
+    com.wotiwan.spring.database.repository.pool.ConnectionPool: INFO
+  file:
+    name: logs
+    path: /
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/medonline
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        hbm2ddl.auto: validate
+    open-in-view: false
