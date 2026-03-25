@@ -86,6 +86,11 @@ public class UserService implements UserDetailsService {
                 .map(userReadMapper::map)
                 .toList();
     }
+    public List<UserReadDto> findAllByRole(Role role) {
+        return userRepository.findAllByRole(role).stream()
+                .map(userReadMapper::map)
+                .toList();
+    }
     @Transactional
     public boolean updateRole(Integer id, Role role) {
         return userRepository.updateRole(id, role) > 0;

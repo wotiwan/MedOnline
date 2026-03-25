@@ -42,7 +42,9 @@ public class User {
 
     @PrePersist
     public void prePersist() {
-        this.role = Role.PATIENT; // По умолчанию при создании все пользователи - обычные пациенты.
+        if (this.role == null) {
+            this.role = Role.PATIENT; // По умолчанию при создании все пользователи - обычные пациенты.
+        }
         this.createdAt = LocalDateTime.now();
     }
 

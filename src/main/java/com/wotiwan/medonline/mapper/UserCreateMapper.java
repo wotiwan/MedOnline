@@ -1,7 +1,9 @@
 package com.wotiwan.medonline.mapper;
 
+import com.wotiwan.medonline.database.entity.Role;
 import com.wotiwan.medonline.database.entity.User;
 import com.wotiwan.medonline.dto.UserCreateDto;
+import com.wotiwan.medonline.dto.UserDoctorCreateDto;
 import com.wotiwan.medonline.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +25,7 @@ public class UserCreateMapper implements Mapper<UserCreateDto, User>{
                 .lastName(object.lastName())
                 .build();
     }
+
     @Override
     public User map(UserCreateDto fromObject, User toObject) {
         toObject.setEmail(fromObject.email());
@@ -31,5 +34,17 @@ public class UserCreateMapper implements Mapper<UserCreateDto, User>{
         toObject.setMiddleName(fromObject.middleName());
         toObject.setLastName(fromObject.lastName());
         return toObject;
+    }
+
+    // Вариация для создания юзера и доктора одновременно
+    public User map(UserDoctorCreateDto object) {
+        return User.builder()
+                .email(object.getEmail())
+                .password(passwordEncoder.encode(object.getPassword())) // Хеширование тут происходит. Мб переделать
+                .firstName(object.getFirstName())
+                .middleName(object.getMiddleName())
+                .lastName(object.getLastName())
+                .birthDate(object.getBirthDate())
+                .build();
     }
 }

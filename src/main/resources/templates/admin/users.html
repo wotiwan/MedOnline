@@ -16,6 +16,17 @@
     <div th:each="err : ${errors}" th:text="${err}"></div>
   </div>
 
+  <form method="get" th:action="@{/admin/users}">
+    <label>Фильтр по роли:</label>
+    <select name="role" onchange="this.form.submit()">
+      <option th:each="r : ${rolesFilter}"
+              th:value="${r}"
+              th:text="${r}"
+              th:selected="${r == selectedRole}">
+      </option>
+    </select>
+  </form>
+
   <div class="users-grid">
     <div class="user-card" th:each="user : ${users}">
 
