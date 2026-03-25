@@ -17,10 +17,4 @@ public class MainController {
         return "main/home";
     }
 
-    @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')") // доступ только для админа
-    public String admin() {
-        return "main/admin";
-    }
-
 }

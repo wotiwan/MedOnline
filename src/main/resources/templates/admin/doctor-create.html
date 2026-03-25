@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Создание врача</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: main-header"></div>
+
+<div class="container">
+    <h2>Создание врача</h2>
+
+    <!-- сообщения -->
+    <div th:if="${error}" class="alert error">
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${success}" class="alert success">
+        <span th:text="${success}"></span>
+    </div>
+
+    <!-- инфа о пользователе -->
+    <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+    <p><strong>Имя:</strong> <span th:text="${user.firstName}"></span></p>
+
+    <form th:action="@{/admin/doctors/create}" method="post">
+
+        <input type="hidden" name="userId" th:value="${doctor.userId}"/>
+
+        <div>
+            <label>Специализация</label>
+            <input type="text" name="specialization" required>
+        </div>
+
+        <div>
+            <label>Описание</label>
+            <textarea name="description"></textarea>
+        </div>
+
+        <button type="submit">Создать врача</button>
+    </form>
+</div>
+
+</body>
+</html>

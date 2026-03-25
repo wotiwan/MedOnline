@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Пользователи</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: main-header"></div>
+
+<div class="container">
+  <h2>Пользователи</h2>
+
+  <!-- ошибки -->
+  <div th:if="${errors}" class="alert error">
+    <div th:each="err : ${errors}" th:text="${err}"></div>
+  </div>
+
+  <div class="users-grid">
+    <div class="user-card" th:each="user : ${users}">
+
+      <div class="user-info">
+        <div class="user-email" th:text="${user.email}"></div>
+        <div class="user-name">
+          <span th:text="${user.firstName}"></span>
+        </div>
+        <div class="user-role" th:text="${user.role}"></div>
+      </div>
+
+      <div class="user-actions">
+
+        <!-- кнопка "Сделать врачом" только для пациентов -->
+        <a th:if="${user.role.name() == 'PATIENT'}"
+           th:href="@{'/admin/doctors/create?userId=' + ${user.id}}">
+          <button class="btn">Сделать врачом</button>
+        </a>
+
+        <!-- кнопка "Сделать админом" только для пациентов -->
+        <form th:if="${user.role.name() == 'PATIENT'}"
+              th:action="@{'/admin/users/' + ${user.id} + '/role'}"
+              method="post">
+          <input type="hidden" name="role" value="ADMIN"/>
+          <button class="btn secondary" type="submit">
+            Сделать админом
+          </button>
+        </form>
+
+        <!-- удалить/редактировать любого пользователя -->
+        <div class="horizontal-buttons-container">
+          <form th:action="@{'/admin/users/' + ${user.id} + '/edit'}"
+                method="get">
+            <button class="btn" type="submit">
+              Редактировать
+            </button>
+          </form>
+          <form th:action="@{'/admin/users/' + ${user.id} + '/delete'}"
+                method="post">
+            <button class="btn danger" type="submit">
+              Удалить
+            </button>
+          </form>
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

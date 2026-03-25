@@ -1,5 +1,6 @@
 package com.wotiwan.medonline.service;
 
+import com.wotiwan.medonline.database.entity.Role;
 import com.wotiwan.medonline.database.repository.UserRepository;
 import com.wotiwan.medonline.dto.UserCreateDto;
 import com.wotiwan.medonline.dto.UserEditDto;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 // UserService предназначен для регистрации пользователей и их авторизации.
@@ -78,4 +80,25 @@ public class UserService implements UserDetailsService {
 
     // TODO: Добавить функционал администратора -- смена ролей + удаление пользователей
     // Потребуется UserEditDto + методы updateRole(), delete()
+
+    public List<UserReadDto> findAll() {
+        return userRepository.findAll().stream()
+                .map(userReadMapper::map)
+                .toList();
+    }
+    @Transactional
+    public boolean updateRole(Integer id, Role role) {
+        return userRepository.updateRole(id, role) > 0;
+    }
+    @Transactional
+    public boolean delete(Integer id) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    userRepository.delete(user);
+                    userRepository.flush();
+                    return true;
+                })
+                .orElse(false);
+    }
+
 }
