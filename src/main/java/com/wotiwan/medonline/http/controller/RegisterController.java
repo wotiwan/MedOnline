@@ -1,12 +1,10 @@
 package com.wotiwan.medonline.http.controller;
 
-import com.querydsl.codegen.QueryTypeFactoryImpl;
-import com.wotiwan.medonline.dto.UserCreateEditDto;
+import com.wotiwan.medonline.dto.UserCreateDto;
 import com.wotiwan.medonline.dto.UserReadDto;
 import com.wotiwan.medonline.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +27,7 @@ public class RegisterController {
 
     // Валидация автоматом посредством аннотации @Validated (в Dto поля помечены валидационными аннотациями)
     @PostMapping
-    public String create(@ModelAttribute @Validated UserCreateEditDto user,
+    public String create(@ModelAttribute @Validated UserCreateDto user,
                          BindingResult bindingResult, // Сохраняет в себя ошибки валидации
                          RedirectAttributes redirectAttributes) {
         // Здесь валидация

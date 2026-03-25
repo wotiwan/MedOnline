@@ -3,6 +3,7 @@ package com.wotiwan.medonline.database.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -24,8 +25,18 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String firstName;
+
+    private String middleName;
+
+    @Column(nullable = false)
+    private String lastName;
+
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private LocalDate birthDate;
 
     private LocalDateTime createdAt;
 

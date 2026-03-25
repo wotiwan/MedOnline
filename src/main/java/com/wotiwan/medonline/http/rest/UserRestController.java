@@ -1,6 +1,7 @@
 package com.wotiwan.medonline.http.rest;
 
-import com.wotiwan.medonline.dto.UserCreateEditDto;
+import com.wotiwan.medonline.dto.UserCreateDto;
+import com.wotiwan.medonline.dto.UserEditDto;
 import com.wotiwan.medonline.dto.UserReadDto;
 import com.wotiwan.medonline.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,20 +18,20 @@ public class UserRestController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public UserReadDto findById(@PathVariable("id") Long id) {
+    public UserReadDto findById(@PathVariable("id") Integer id) {
         return userService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public UserReadDto create(@Validated @RequestBody UserCreateEditDto user) { // Зач реквест боди?
+    public UserReadDto create(@Validated @RequestBody UserCreateDto user) { // Зач реквест боди?
         return userService.create(user);
     }
 
     @PutMapping("/{id}")
-    public UserReadDto update(@PathVariable("id") Long id,
-                              @Validated @RequestBody UserCreateEditDto user) { // Зач реквест боди?
+    public UserReadDto update(@PathVariable("id") Integer id,
+                              @Validated @RequestBody UserEditDto user) { // Зач реквест боди?
         return userService.update(id, user)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }

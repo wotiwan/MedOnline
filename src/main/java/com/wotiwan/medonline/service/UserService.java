@@ -1,11 +1,13 @@
 package com.wotiwan.medonline.service;
 
 import com.wotiwan.medonline.database.repository.UserRepository;
-import com.wotiwan.medonline.dto.UserCreateEditDto;
+import com.wotiwan.medonline.dto.UserCreateDto;
+import com.wotiwan.medonline.dto.UserEditDto;
 import com.wotiwan.medonline.dto.UserReadDto;
-import com.wotiwan.medonline.mapper.UserCreateEditMapper;
+import com.wotiwan.medonline.mapper.UserCreateMapper;
+import com.wotiwan.medonline.mapper.UserEditMapper;
 import com.wotiwan.medonline.mapper.UserReadMapper;
-import com.wotiwan.medonline.util.PasswordUtil;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,27 +29,30 @@ import java.util.Optional;
 @Transactional(readOnly = true) // Для чего readOnly? ТАк быстрее работает, но только на чтение
 public class UserService implements UserDetailsService {
     private final UserReadMapper userReadMapper;
-    private final UserCreateEditMapper userCreateEditMapper;
+    private final UserCreateMapper userCreateMapper;
+    private final UserEditMapper userEditMapper;
     private final UserRepository userRepository;
 
-    public Optional<UserReadDto> findById(Long id) {
+    public Optional<UserReadDto> findById(Integer id) {
         return userRepository.findById(id)
                 .map(userReadMapper::map);
     }
 
     @Transactional // Над ними переопределяем аннотацию, без ридонли флага, чтобы работало
-    public UserReadDto create(UserCreateEditDto userDto) {
+    public UserReadDto create(UserCreateDto userDto) {
         return Optional.of(userDto)
-                .map(userCreateEditMapper::map) // Мапим dto в Entity (там же хеширование пароля)
+                .map(userCreateMapper::map) // Мапим dto в Entity (там же хеширование пароля)
                 .map(userRepository::save) // Сохраняем Entity
                 .map(userReadMapper::map) // Мапим результат в dto для чтения
                 .orElseThrow();
     }
 
+    // Находим юзера по id, затем меняем поля, переданные в UserEditDto, после чего сохраняем
+    // Далее мапим обновлённого юзера в дто для отправки на фронт
     @Transactional
-    public Optional<UserReadDto> update(Long id, UserCreateEditDto userDto) {
+    public Optional<UserReadDto> update(Integer id, UserEditDto userDto) {
         return userRepository.findById(id)
-                .map(e -> userCreateEditMapper.map(userDto, e))
+                .map(e -> userEditMapper.map(userDto, e))
                 .map(userRepository::saveAndFlush)
                 .map(userReadMapper::map);
     }

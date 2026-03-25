@@ -20,7 +20,7 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
+    private User patient;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
@@ -30,7 +30,11 @@ public class Appointment {
     @JoinColumn(name = "time_slot_id", nullable = false, unique = true)
     private TimeSlot timeSlot;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AppointmentStatus status;
+
+    @Column(columnDefinition = "TEXT")
+    private String consultationResult;
 
     private LocalDateTime createdAt;
 
