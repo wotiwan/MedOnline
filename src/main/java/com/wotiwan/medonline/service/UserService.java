@@ -8,6 +8,7 @@ import com.wotiwan.medonline.mapper.UserReadMapper;
 import com.wotiwan.medonline.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -51,14 +52,20 @@ public class UserService implements UserDetailsService {
                 .map(userReadMapper::map);
     }
 
-    // Логин
+    // В Principal хранится только email текущего пользователя, по-этому искать можем так
+    public Optional<UserReadDto> findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(userReadMapper::map);
+    }
+
+    // Нужно Spring Security для логина
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
                 .map(user -> new org.springframework.security.core.userdetails.User(
                         user.getEmail(),
                         user.getPassword(),
-                        Collections.singleton(user.getRole())
+                        Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
                 ))
                 .orElseThrow(() -> new UsernameNotFoundException("Failed to retrieve user: " + username));
     }

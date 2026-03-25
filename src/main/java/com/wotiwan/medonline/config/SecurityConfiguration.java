@@ -20,7 +20,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/home", "/login", "/error", "/register").permitAll()
+                        .requestMatchers("/", "/home", "/login", "/error", "/register").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
@@ -30,7 +30,10 @@ public class SecurityConfiguration {
                         .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
-                .logout(LogoutConfigurer::permitAll
+                .logout(logout -> logout
+                        .logoutUrl("/logout") // Путь по которому происходит логаут
+                        .logoutSuccessUrl("/login") // Редиректим на авторизацию
+                        .deleteCookies("JSESSIONID") // Удаляем сессию из куки
                 );
 
         return http.build();
