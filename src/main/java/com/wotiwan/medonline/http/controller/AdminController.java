@@ -32,7 +32,7 @@ public class AdminController {
 
     @GetMapping
     public String admin() {
-        return "main/admin";
+        return "admin/admin";
     }
 
     // список пользователей
@@ -46,6 +46,8 @@ public class AdminController {
             model.addAttribute("users", userService.findAllByRole(Role.ADMIN));
         } else if (role.equals("DOCTOR")) {
             model.addAttribute("users", userService.findAllByRole(Role.DOCTOR));
+        } else if (role.equals("PATIENT")) {
+            model.addAttribute("users", userService.findAllByRole(Role.PATIENT));
         }
 
         model.addAttribute("rolesFilter", new String[]{"ALL", "ADMIN", "DOCTOR", "PATIENT"});
