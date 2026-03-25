@@ -8,9 +8,13 @@ import com.wotiwan.medonline.mapper.UserReadMapper;
 import com.wotiwan.medonline.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Optional;
 
 // UserService предназначен для регистрации пользователей и их авторизации.
@@ -20,7 +24,7 @@ import java.util.Optional;
 @ToString
 @Service
 @Transactional(readOnly = true) // Для чего readOnly? ТАк быстрее работает, но только на чтение
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserReadMapper userReadMapper;
     private final UserCreateEditMapper userCreateEditMapper;
     private final UserRepository userRepository;
@@ -45,6 +49,18 @@ public class UserService {
                 .map(e -> userCreateEditMapper.map(userDto, e))
                 .map(userRepository::saveAndFlush)
                 .map(userReadMapper::map);
+    }
+
+    // Логин
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByEmail(username)
+                .map(user -> new org.springframework.security.core.userdetails.User(
+                        user.getEmail(),
+                        user.getPassword(),
+                        Collections.singleton(user.getRole())
+                ))
+                .orElseThrow(() -> new UsernameNotFoundException("Failed to retrieve user: " + username));
     }
 
 

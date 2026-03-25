@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying(clearAutomatically = true)
@@ -14,4 +16,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     )
     int updateRole(Long id, Role role);
 
+    Optional<User> findByEmail(String username);
 }

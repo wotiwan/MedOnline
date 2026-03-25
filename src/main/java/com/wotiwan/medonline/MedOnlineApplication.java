@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MedOnlineApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MedOnlineApplication.class, args);
+        var context = SpringApplication.run(MedOnlineApplication.class, args);
     }
-
 }
