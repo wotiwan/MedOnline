@@ -24,18 +24,23 @@
     <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
     <p><strong>Имя:</strong> <span th:text="${user.firstName}"></span></p>
 
-    <form th:action="@{/admin/doctors/create}" method="post">
+    <form th:action="@{/admin/doctors/create}" th:object="${doctor}" method="post">
 
-        <input type="hidden" name="userId" th:value="${doctor.userId}"/>
+        <input type="hidden" th:field="*{userId}" />
 
         <div>
             <label>Специализация</label>
-            <input type="text" name="specialization" required>
+            <select th:field="*{specializationId}" required>
+                <option th:each="s : ${specializations}"
+                        th:value="${s.id}"
+                        th:text="${s.name}">
+                </option>
+            </select>
         </div>
 
         <div>
             <label>Описание</label>
-            <textarea name="description"></textarea>
+            <textarea th:field="*{description}"></textarea>
         </div>
 
         <button type="submit">Создать врача</button>

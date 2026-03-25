@@ -2,8 +2,10 @@ package com.wotiwan.medonline.service;
 
 import com.wotiwan.medonline.database.entity.Doctor;
 import com.wotiwan.medonline.database.entity.Role;
+import com.wotiwan.medonline.database.entity.Specialization;
 import com.wotiwan.medonline.database.entity.User;
 import com.wotiwan.medonline.database.repository.DoctorRepository;
+import com.wotiwan.medonline.database.repository.SpecializationRepository;
 import com.wotiwan.medonline.database.repository.UserRepository;
 import com.wotiwan.medonline.dto.DoctorCreateDto;
 import com.wotiwan.medonline.dto.UserDoctorCreateDto;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DoctorService {
     private final DoctorRepository doctorRepository;
     private final UserRepository userRepository;
+    private final SpecializationRepository specializationRepository;
     private final DoctorCreateMapper doctorCreateMapper;
     private final UserCreateMapper userCreateMapper;
 
@@ -38,7 +41,9 @@ public class DoctorService {
 
         // Создаём Doctor
         Doctor doctor = doctorCreateMapper.map(dto);
-
+        var specialization = specializationRepository.findById(dto.getSpecializationId())
+                .orElseThrow(() -> new IllegalArgumentException("Specialization not found"));
+        doctor.setSpecialization(specialization);
         doctorRepository.save(doctor);
     }
 }

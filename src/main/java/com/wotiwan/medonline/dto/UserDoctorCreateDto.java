@@ -28,8 +28,8 @@ public class UserDoctorCreateDto {
     @NotNull(message = "Дата рождения обязательна")
     LocalDate birthDate;
 
-    @NotBlank(message = "Специализация обязательна")
-    String specialization;
+    @NotNull(message = "Специализация обязательна")
+    Integer specializationId;
 
     String description;
 }

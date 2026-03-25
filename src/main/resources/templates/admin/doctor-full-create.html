@@ -47,7 +47,12 @@
 
         <div>
             <label>Специализация</label>
-            <input type="text" th:field="*{specialization}" required>
+            <select th:field="*{specializationId}" required>
+                <option th:each="s : ${specializations}"
+                        th:value="${s.id}"
+                        th:text="${s.name}">
+                </option>
+            </select>
         </div>
 
         <div>

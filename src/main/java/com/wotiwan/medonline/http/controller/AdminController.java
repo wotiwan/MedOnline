@@ -1,10 +1,12 @@
 package com.wotiwan.medonline.http.controller;
 
 import com.wotiwan.medonline.database.entity.Role;
+import com.wotiwan.medonline.database.entity.Specialization;
 import com.wotiwan.medonline.dto.DoctorCreateDto;
 import com.wotiwan.medonline.dto.UserDoctorCreateDto;
 import com.wotiwan.medonline.dto.UserReadDto;
 import com.wotiwan.medonline.service.DoctorService;
+import com.wotiwan.medonline.service.SpecializationService;
 import com.wotiwan.medonline.service.UserDoctorService;
 import com.wotiwan.medonline.service.UserService;
 import jakarta.validation.Valid;
@@ -29,6 +31,7 @@ public class AdminController {
     private final UserService userService;
     private final DoctorService doctorService;
     private final UserDoctorService userDoctorService;
+    private final SpecializationService specializationService;
 
     @GetMapping
     public String admin() {
@@ -88,7 +91,8 @@ public class AdminController {
                 .orElseThrow();
 
         model.addAttribute("user", user);
-        model.addAttribute("doctor", new DoctorCreateDto(userId, "", ""));
+        model.addAttribute("specializations", specializationService.findAll());
+        model.addAttribute("doctor", new DoctorCreateDto(userId, null, ""));
 
         return "admin/doctor-create";
     }
@@ -112,7 +116,8 @@ public class AdminController {
     // Создание Юзера + Врача за раз
     @GetMapping("/doctors/full/create")
     public String createForm(Model model) {
-        model.addAttribute("doctor", new UserDoctorCreateDto("", "", "", "", "", null, "", ""));
+        model.addAttribute("specializations", specializationService.findAll());
+        model.addAttribute("doctor", new UserDoctorCreateDto("", "", "", "", "", null, null, ""));
         return "admin/doctor-full-create";
     }
 

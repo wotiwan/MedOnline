@@ -10,10 +10,15 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+create table specialization (
+    id SERIAL primary key ,
+    name varchar(255) not null unique
+);
+
 CREATE TABLE doctors (
      id SERIAL PRIMARY KEY,
      user_id INT UNIQUE NOT NULL,
-     specialization VARCHAR(255),
+     specialization_id int references specialization(id),
      description TEXT,
 
      CONSTRAINT fk_doctor_user

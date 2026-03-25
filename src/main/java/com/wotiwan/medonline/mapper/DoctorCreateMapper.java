@@ -21,7 +21,6 @@ public class DoctorCreateMapper implements Mapper<DoctorCreateDto, Doctor> {
 
         return Doctor.builder()
                 .user(user)
-                .specialization(dto.getSpecialization())
                 .description(dto.getDescription())
                 .build();
     }
@@ -34,7 +33,6 @@ public class DoctorCreateMapper implements Mapper<DoctorCreateDto, Doctor> {
 
         return Doctor.builder()
                 .user(user)
-                .specialization(dto.getSpecialization())
                 .description(dto.getDescription())
                 .build();
     }

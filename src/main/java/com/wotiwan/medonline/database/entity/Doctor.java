@@ -20,7 +20,9 @@ public class Doctor {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    private String specialization;
+    @ManyToOne
+    @JoinColumn(name = "specialization_id", nullable = false)
+    private Specialization specialization;
 
     @Column(columnDefinition = "TEXT")
     private String description;
