@@ -136,3 +136,22 @@ button:hover {
 .horizontal-buttons-container > form:not(:last-child) {
     margin-right: 5px;
 }
+
+.admin-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 16px;
+}
+
+.admin-actions .btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #3498db;
+    color: white;
+}
+
+.admin-actions .btn:hover {
+    background-color: #2980b9;
+}

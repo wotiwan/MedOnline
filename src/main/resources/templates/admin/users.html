@@ -33,7 +33,7 @@
       <div class="user-info">
         <div class="user-email" th:text="${user.email}"></div>
         <div class="user-name">
-          <span th:text="${user.firstName}"></span>
+          <span th:text="${user.lastName + ' ' + user.firstName + ' ' + user.middleName}"></span>
         </div>
         <div class="user-role" th:text="${user.role}"></div>
       </div>

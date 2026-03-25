@@ -7,9 +7,21 @@
 </head>
 <body>
 <div th:replace="fragments/header :: main-header"></div>
+
 <div class="container">
   <h2>Админ-панель</h2>
   <p>Здесь будет функционал администрирования системы.</p>
+
+  <div class="admin-actions">
+    <a th:href="@{/admin/users}">
+      <button class="btn">Список всех пользователей</button>
+    </a>
+
+    <a th:href="@{/admin/doctors/full/create}">
+      <button class="btn">Создать врача с нуля</button>
+    </a>
+  </div>
 </div>
+
 </body>
 </html>
