@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -22,4 +23,7 @@ public class SpecializationService {
                 .toList();
     }
 
+    public Optional<Specialization> findById(Integer specializationId) {
+        return specializationRepository.findById(specializationId);
+    }
 }

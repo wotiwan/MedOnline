@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${specialization.name}">Специализация</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<div class="container">
+  <h2>
+    Врачи: <span th:text="${specialization.name}"></span>
+  </h2>
+
+  <div th:if="${#lists.isEmpty(doctors)}">
+    <p>Нет доступных врачей</p>
+  </div>
+
+  <div th:each="d : ${doctors}" class="card">
+    <h3 th:text="${d.id()}"></h3>
+    <p th:text="${d.description}"></p>
+
+    <a th:href="@{'/appointments/create?doctorId=' + ${d.id}}">
+      <button>Записаться</button>
+    </a>
+  </div>
+</div>
+</body>
+</html>

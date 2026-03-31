@@ -8,8 +8,15 @@
 <body>
 <div th:replace="fragments/header :: main-header"></div>
 <div class="container">
-    <h2>Добро пожаловать!</h2>
-    <p>Это главная страница. Здесь будет контент для пациентов и врачей.</p>
+    <h2>Выберите специализацию</h2>
+
+    <div class="specializations">
+        <div th:each="s : ${specializations}" class="card">
+            <a th:href="@{'/doctors?specializationId=' + ${s.id}}">
+                <h3 th:text="${s.name}"></h3>
+            </a>
+        </div>
+    </div>
 </div>
 </body>
 </html>

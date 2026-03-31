@@ -14,9 +14,11 @@ import com.wotiwan.medonline.mapper.DoctorCreateMapper;
 import com.wotiwan.medonline.mapper.DoctorMapper;
 import com.wotiwan.medonline.mapper.UserCreateMapper;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -57,4 +59,9 @@ public class DoctorService {
                 .map(doctorMapper::map);
     }
 
+    public List<DoctorReadDto> findAllBySpecialization(Integer specializationId) {
+        return doctorRepository.findAllBySpecializationId(specializationId).stream()
+                .map(doctorMapper::map)
+                .toList();
+    }
 }
