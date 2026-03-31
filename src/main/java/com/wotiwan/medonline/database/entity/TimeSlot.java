@@ -31,4 +31,7 @@ public class TimeSlot {
 
     private boolean isBooked = false;
 
+    @Version
+    private Integer version;
+
 }

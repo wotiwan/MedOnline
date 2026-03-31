@@ -55,6 +55,7 @@ CREATE TABLE time_slots (
         start_time TIMESTAMP NOT NULL,
         end_time TIMESTAMP NOT NULL,
         is_booked BOOLEAN DEFAULT FALSE,
+        version INT NOT NULL,
 
         CONSTRAINT fk_slot_schedule
             FOREIGN KEY (schedule_id) REFERENCES schedules(id) ON DELETE CASCADE
