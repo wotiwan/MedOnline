@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
 
-    List<Appointment> findAllByPatientIdOrderByTimeSlot_StartTimeAsc(Integer patientId);
+    List<Appointment> findAllByPatientIdOrderByTimeSlot_StartTimeDesc(Integer patientId);
 
 }

@@ -110,13 +110,14 @@ public class UserService implements UserDetailsService {
                 .orElse(false);
     }
 
+    // TODO: Добавить пагинацию
     // Загрузка всех записей к врачу одного пользователя
     public List<Appointment> findAllUserAppointmentsByUserEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow();
 
         return appointmentRepository
-                .findAllByPatientIdOrderByTimeSlot_StartTimeAsc(user.getId());
+                .findAllByPatientIdOrderByTimeSlot_StartTimeDesc(user.getId());
     }
 
 }
