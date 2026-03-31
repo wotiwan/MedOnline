@@ -1,5 +1,6 @@
 package com.wotiwan.medonline.http.controller;
 
+import com.wotiwan.medonline.database.entity.Appointment;
 import com.wotiwan.medonline.database.entity.User;
 import com.wotiwan.medonline.dto.UserCreateDto;
 import com.wotiwan.medonline.dto.UserEditDto;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/profile")
@@ -27,16 +29,18 @@ public class UserController {
 
     @GetMapping
     public String profilePage(Model model, Principal principal) {
-        // Получаем имя текущего залогиненного пользователя
-        String username = principal.getName();
 
-        // Находим его по юзернейму и кладём в модель
-        return userService.findByEmail(username)
-                .map(user -> {
-                    model.addAttribute("user", user);
-                    return "user/profile";
-                })
+        UserReadDto user = userService.findByEmail(principal.getName())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        model.addAttribute("user", user);
+
+        List<Appointment> appointments =
+                userService.findAllUserAppointmentsByUserEmail(principal.getName());
+
+        model.addAttribute("appointments", appointments);
+
+        return "user/profile";
     }
 
     @PostMapping

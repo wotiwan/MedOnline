@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Детали записи</title>
+    <link rel="stylesheet" th:href="@{/css/appointments.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: main-header"></div>
+
+<div class="container">
+
+    <h2>Информация о записи</h2>
+
+    <div class="card">
+
+        <p><strong>Врач:</strong>
+            <span th:text="${appointment.doctor.user.firstName} + ' ' + ${appointment.doctor.user.lastName}"></span>
+        </p>
+
+        <p><strong>Специализация:</strong>
+            <span th:text="${appointment.doctor.specialization.name}"></span>
+        </p>
+
+        <p><strong>Дата:</strong>
+            <span th:text="${#temporals.format(appointment.timeSlot.startTime, 'dd.MM.yyyy')}"></span>
+        </p>
+
+        <p><strong>Время:</strong>
+            <span th:text="${#temporals.format(appointment.timeSlot.startTime, 'HH:mm')}"></span>
+            -
+            <span th:text="${#temporals.format(appointment.timeSlot.endTime, 'HH:mm')}"></span>
+        </p>
+        <p><strong>Заключение:</strong>
+            <span th:text="${appointment.consultationResult != null and !#strings.isEmpty(appointment.consultationResult)
+                ? appointment.consultationResult
+                : 'Появится позже'}">
+            </span>
+        </p>
+
+        <p><strong>Статус:</strong>
+            <span class="status"
+                  th:classappend="
+                    ${appointment.status.name() == 'BOOKED'} ? ' booked' :
+                    (${appointment.status.name() == 'CANCELLED'} ? ' cancelled' : ' completed')"
+                  th:text="${appointment.status}">
+            </span>
+        </p>
+
+        <!-- кнопка отмены -->
+        <form th:if="${appointment.status.name() == 'BOOKED'}"
+              th:action="@{/appointments/cancel}"
+              method="post">
+
+            <input type="hidden" name="appointmentId" th:value="${appointment.id}"/>
+
+            <button class="cancel-btn" type="submit">
+                Отменить запись
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

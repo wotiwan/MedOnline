@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>Профиль пользователя</title>
   <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/appointments.css}">
   <style>
     .edit-form { display: none; margin-top: 20px; }
     .form-group { margin-bottom: 12px; }
@@ -59,6 +60,49 @@
     <button type="submit" class="save-btn">Сохранить</button>
     <button type="button" class="cancel-btn" id="cancelBtn">Отмена</button>
   </form>
+
+  <h3>Мои записи</h3>
+
+  <div th:if="${#lists.isEmpty(appointments)}">
+    <p>У вас пока нет записей</p>
+  </div>
+
+  <table th:if="${!#lists.isEmpty(appointments)}">
+    <tr>
+      <th>Врач</th>
+      <th>Специализация</th>
+      <th>Дата</th>
+      <th>Время</th>
+      <th>Статус</th>
+    </tr>
+
+    <tr th:each="a : ${appointments}"
+        th:onclick="|window.location.href='/appointments/${a.id}'|"
+        class="clickable-row">
+
+      <td th:text="${a.doctor.user.firstName} + ' ' + ${a.doctor.user.lastName}"></td>
+
+      <td th:text="${a.doctor.specialization.name}"></td>
+
+      <td th:text="${#temporals.format(a.timeSlot.startTime, 'dd.MM.yyyy')}"></td>
+
+      <td>
+        <span th:text="${#temporals.format(a.timeSlot.startTime, 'HH:mm')}"></span>
+        -
+        <span th:text="${#temporals.format(a.timeSlot.endTime, 'HH:mm')}"></span>
+      </td>
+
+      <td>
+        <span class="status"
+              th:classappend="
+                ${a.status.name() == 'BOOKED'} ? ' booked' :
+                (${a.status.name() == 'CANCELLED'} ? ' cancelled' : ' completed')"
+              th:text="${a.status}">
+        </span>
+      </td>
+
+    </tr>
+  </table>
 
   <!-- Logout -->
   <form th:action="@{/logout}" method="post" style="margin-top: 20px;">

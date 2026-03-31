@@ -1,6 +1,9 @@
 package com.wotiwan.medonline.service;
 
+import com.wotiwan.medonline.database.entity.Appointment;
 import com.wotiwan.medonline.database.entity.Role;
+import com.wotiwan.medonline.database.entity.User;
+import com.wotiwan.medonline.database.repository.AppointmentRepository;
 import com.wotiwan.medonline.database.repository.UserRepository;
 import com.wotiwan.medonline.dto.UserCreateDto;
 import com.wotiwan.medonline.dto.UserEditDto;
@@ -34,6 +37,7 @@ public class UserService implements UserDetailsService {
     private final UserCreateMapper userCreateMapper;
     private final UserEditMapper userEditMapper;
     private final UserRepository userRepository;
+    private final AppointmentRepository appointmentRepository;
 
     public Optional<UserReadDto> findById(Integer id) {
         return userRepository.findById(id)
@@ -104,6 +108,15 @@ public class UserService implements UserDetailsService {
                     return true;
                 })
                 .orElse(false);
+    }
+
+    // Загрузка всех записей к врачу одного пользователя
+    public List<Appointment> findAllUserAppointmentsByUserEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        return appointmentRepository
+                .findAllByPatientIdOrderByTimeSlot_StartTimeAsc(user.getId());
     }
 
 }
