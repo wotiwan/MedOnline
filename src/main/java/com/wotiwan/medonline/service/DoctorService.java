@@ -8,12 +8,16 @@ import com.wotiwan.medonline.database.repository.DoctorRepository;
 import com.wotiwan.medonline.database.repository.SpecializationRepository;
 import com.wotiwan.medonline.database.repository.UserRepository;
 import com.wotiwan.medonline.dto.DoctorCreateDto;
+import com.wotiwan.medonline.dto.DoctorReadDto;
 import com.wotiwan.medonline.dto.UserDoctorCreateDto;
 import com.wotiwan.medonline.mapper.DoctorCreateMapper;
+import com.wotiwan.medonline.mapper.DoctorMapper;
 import com.wotiwan.medonline.mapper.UserCreateMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,7 @@ public class DoctorService {
     private final SpecializationRepository specializationRepository;
     private final DoctorCreateMapper doctorCreateMapper;
     private final UserCreateMapper userCreateMapper;
+    private final DoctorMapper doctorMapper;
 
     // Создание доктора из юзера
     public void create(DoctorCreateDto dto) {
@@ -46,4 +51,10 @@ public class DoctorService {
         doctor.setSpecialization(specialization);
         doctorRepository.save(doctor);
     }
+
+    public Optional<DoctorReadDto> findById(Integer id) {
+        return doctorRepository.findById(id)
+                .map(doctorMapper::map);
+    }
+
 }

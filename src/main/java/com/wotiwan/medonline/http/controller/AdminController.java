@@ -1,14 +1,11 @@
 package com.wotiwan.medonline.http.controller;
 
+import com.wotiwan.medonline.database.entity.Doctor;
 import com.wotiwan.medonline.database.entity.Role;
+import com.wotiwan.medonline.database.entity.ScheduleTemplate;
 import com.wotiwan.medonline.database.entity.Specialization;
-import com.wotiwan.medonline.dto.DoctorCreateDto;
-import com.wotiwan.medonline.dto.UserDoctorCreateDto;
-import com.wotiwan.medonline.dto.UserReadDto;
-import com.wotiwan.medonline.service.DoctorService;
-import com.wotiwan.medonline.service.SpecializationService;
-import com.wotiwan.medonline.service.UserDoctorService;
-import com.wotiwan.medonline.service.UserService;
+import com.wotiwan.medonline.dto.*;
+import com.wotiwan.medonline.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.time.DayOfWeek;
+import java.util.List;
 import java.util.Objects;
 
 @Controller
@@ -32,6 +31,7 @@ public class AdminController {
     private final DoctorService doctorService;
     private final UserDoctorService userDoctorService;
     private final SpecializationService specializationService;
+    private final ScheduleService scheduleService;
 
     @GetMapping
     public String admin() {
@@ -138,6 +138,84 @@ public class AdminController {
         }
 
         return "redirect:/admin/users";
+    }
+
+
+    // Управление расписанием врачей
+
+    // Страница с созданием
+
+    // Страница с настройкой расписания конкретного врача
+    // TODO: doctor_id и user_id - не одно и то же, из-за этого будет путаница. Стоит как-то поменять
+    @GetMapping("/schedules/doctor/{doctorId}")
+    public String doctorSchedulePage(@PathVariable Integer doctorId, Model model) {
+
+        DoctorReadDto doctor = doctorService.findById(doctorId)
+                .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+
+        // Шаблоны расписания для врача
+        List<ScheduleTemplateReadDto> templates = scheduleService.findAllScheduleTemplatesByDoctorId(doctorId);
+
+        model.addAttribute("doctor", doctor);
+        model.addAttribute("templates", templates);
+        model.addAttribute("newTemplate", new ScheduleTemplateCreateDto(doctorId, null, null, null, null));
+        model.addAttribute("hasTemplates", !templates.isEmpty());
+        model.addAttribute("daysOfWeek", DayOfWeek.values());
+
+        return "admin/doctor-schedule"; // Thymeleaf view
+    }
+
+    @PostMapping("/schedules/doctor/{doctorId}/template/create")
+    public String createTemplate(@PathVariable Integer doctorId,
+                                 @ModelAttribute @Validated ScheduleTemplateCreateDto newTemplate,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            scheduleService.createScheduleTemplate(newTemplate);
+            redirectAttributes.addFlashAttribute("success", "Шаблон создан");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/schedules/doctor/" + doctorId;
+    }
+
+    @PostMapping("/schedules/doctor/{doctorId}/template/{templateId}/delete")
+    public String deleteTemplate(@PathVariable Integer doctorId,
+                                 @PathVariable Integer templateId,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            scheduleService.deleteTemplateById(templateId);
+            redirectAttributes.addFlashAttribute("success", "Шаблон удалён");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/schedules/doctor/" + doctorId;
+    }
+
+    // Генерация расписания на n дней вперёд
+    @PostMapping("/schedules/doctor/{doctorId}/generate")
+    public String generateSchedule(@PathVariable Integer doctorId,
+                                   @RequestParam(defaultValue = "7") int daysAhead,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            scheduleService.generateSchedules(doctorId, daysAhead);
+            redirectAttributes.addFlashAttribute("success", "Расписание сгенерировано");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/schedules/doctor/" + doctorId;
+    }
+
+    // Удаление расписания (всё) у врача
+    @PostMapping("/schedules/doctor/{doctorId}/delete")
+    public String deleteSchedule(@PathVariable Integer doctorId,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            scheduleService.deleteAllByDoctor(doctorId);
+            redirectAttributes.addFlashAttribute("success", "Расписание удалено");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/schedules/doctor/" + doctorId;
     }
 
 }

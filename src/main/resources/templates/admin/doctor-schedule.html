@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Расписание врача</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: main-header"></div>
+
+<div class="container">
+    <h2>Расписание врача <span th:text="${doctor.id}"></span></h2>
+
+    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+    <!-- Таблица шаблонов -->
+    <div th:if="${hasTemplates}">
+        <h3>Текущие шаблоны</h3>
+        <table>
+            <tr>
+                <th>День недели</th>
+                <th>Начало</th>
+                <th>Конец</th>
+                <th>Длительность слота</th>
+                <th>Действия</th>
+            </tr>
+            <tr th:each="t : ${templates}">
+                <td th:text="${t.dayOfWeek}"></td>
+                <td th:text="${t.startTime}"></td>
+                <td th:text="${t.endTime}"></td>
+                <td th:text="${t.slotDuration}"></td>
+                <td>
+                    <form th:action="@{'/admin/schedules/doctor/' + ${doctor.id} + '/template/' + ${t.id} + '/delete'}" method="post">
+                        <button type="submit" style="background-color: #e74c3c; color: white;">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+        <form th:action="@{'/admin/schedules/doctor/' + ${doctor.id} + '/generate'}" method="post" style="margin-top: 20px;">
+            <label>Сгенерировать расписание на дней вперед:</label>
+            <input type="number" name="daysAhead" value="7" min="1"/>
+            <button type="submit">Создать расписание</button>
+        </form>
+    </div>
+
+    <!-- Форма создания нового шаблона -->
+    <div style="margin-top: 30px;">
+        <h3>Добавить новый шаблон</h3>
+        <form th:action="@{'/admin/schedules/doctor/' + ${doctor.id} + '/template/create'}" method="post"
+              th:object="${newTemplate}">
+            <label>День недели</label>
+
+            <input type="hidden" th:field="*{doctorId}">
+
+            <select th:field="*{dayOfWeek}">
+                <option th:each="d : ${daysOfWeek}" th:value="${d}" th:text="${d}"></option>
+            </select>
+
+            <label>Начало работы</label>
+            <input type="time" th:field="*{startTime}" required/>
+
+            <label>Конец работы</label>
+            <input type="time" th:field="*{endTime}" required/>
+
+            <label>Длительность слота (минуты)</label>
+            <input type="number" th:field="*{slotDuration}" min="5" step="5" required/>
+
+            <button type="submit">Создать шаблон</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

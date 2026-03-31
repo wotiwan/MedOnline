@@ -25,6 +25,19 @@ CREATE TABLE doctors (
          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE doctor_schedule_templates (
+       id SERIAL PRIMARY KEY,
+       doctor_id INT NOT NULL,
+       day_of_week varchar(32) NOT NULL,
+       start_time TIME NOT NULL,
+       end_time TIME NOT NULL,
+       slot_duration INT NOT NULL, -- в минутах (15, 30 и т.д.)
+
+       CONSTRAINT fk_template_doctor
+           FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE,
+       UNIQUE (doctor_id, day_of_week)
+);
+
 CREATE TABLE schedules (
        id SERIAL PRIMARY KEY,
        doctor_id INT NOT NULL,
