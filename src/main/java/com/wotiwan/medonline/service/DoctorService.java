@@ -1,12 +1,11 @@
 package com.wotiwan.medonline.service;
 
-import com.wotiwan.medonline.database.entity.Doctor;
-import com.wotiwan.medonline.database.entity.Role;
-import com.wotiwan.medonline.database.entity.Specialization;
-import com.wotiwan.medonline.database.entity.User;
+import com.wotiwan.medonline.database.entity.*;
+import com.wotiwan.medonline.database.repository.AppointmentRepository;
 import com.wotiwan.medonline.database.repository.DoctorRepository;
 import com.wotiwan.medonline.database.repository.SpecializationRepository;
 import com.wotiwan.medonline.database.repository.UserRepository;
+import com.wotiwan.medonline.dto.AppointmentDoctorUpdateDto;
 import com.wotiwan.medonline.dto.DoctorCreateDto;
 import com.wotiwan.medonline.dto.DoctorReadDto;
 import com.wotiwan.medonline.dto.UserDoctorCreateDto;
@@ -31,6 +30,7 @@ public class DoctorService {
     private final DoctorCreateMapper doctorCreateMapper;
     private final UserCreateMapper userCreateMapper;
     private final DoctorMapper doctorMapper;
+    private final AppointmentRepository appointmentRepository;
 
     // Создание доктора из юзера
     public void create(DoctorCreateDto dto) {
@@ -59,9 +59,27 @@ public class DoctorService {
                 .map(doctorMapper::map);
     }
 
+    public Optional<DoctorReadDto> findByUserId(Integer id) {
+        return doctorRepository.findByUserId(id)
+                .map(doctorMapper::map);
+    }
+
     public List<DoctorReadDto> findAllBySpecialization(Integer specializationId) {
         return doctorRepository.findAllBySpecializationId(specializationId).stream()
                 .map(doctorMapper::map)
                 .toList();
     }
+
+    public List<Appointment> getTodayAppointments(Integer doctorId) {
+        return appointmentRepository.findTodayAppointments(doctorId);
+    }
+
+    public void updateAppointment(AppointmentDoctorUpdateDto dto) {
+        Appointment appointment = appointmentRepository.findById(dto.id())
+                .orElseThrow(() -> new IllegalArgumentException("Запись не найдена"));
+
+        appointment.setStatus(dto.status());
+        appointment.setConsultationResult(dto.consultationResult());
+    }
+
 }

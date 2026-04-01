@@ -1,0 +1,22 @@
+<div class="container">
+    <h2>Консультация</h2>
+
+    <form th:action="@{'/doctor/appointments/' + ${appointmentId}}" method="post">
+
+        <div>
+            <label>Статус</label>
+            <select name="status">
+                <option value="BOOKED">BOOKED</option>
+                <option value="COMPLETED">COMPLETED</option>
+                <option value="CANCELLED">CANCELLED</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Результат консультации</label>
+            <textarea name="consultationResult"></textarea>
+        </div>
+
+        <button type="submit" class="btn">Сохранить</button>
+    </form>
+</div>

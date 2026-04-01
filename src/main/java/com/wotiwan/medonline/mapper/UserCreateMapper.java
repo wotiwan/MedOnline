@@ -4,7 +4,6 @@ import com.wotiwan.medonline.database.entity.Role;
 import com.wotiwan.medonline.database.entity.User;
 import com.wotiwan.medonline.dto.UserCreateDto;
 import com.wotiwan.medonline.dto.UserDoctorCreateDto;
-import com.wotiwan.medonline.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

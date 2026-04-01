@@ -1,0 +1,13 @@
+<div class="container">
+  <h2>Записи на сегодня</h2>
+
+  <div class="card" th:each="a : ${appointments}">
+    <p><b>Пациент:</b> <span th:text="${a.patient.firstName}"></span></p>
+    <p><b>Время:</b> <span th:text="${a.timeSlot.startTime}"></span></p>
+    <p><b>Статус:</b> <span th:text="${a.status}"></span></p>
+
+    <a th:href="@{'/doctor/appointments/' + ${a.id}}">
+      <button class="btn">Открыть</button>
+    </a>
+  </div>
+</div>
