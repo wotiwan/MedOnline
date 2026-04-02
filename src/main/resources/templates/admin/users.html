@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+  <meta charset="UTF-8">
   <title>Пользователи</title>
-  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/base.css}">
+  <link rel="stylesheet" th:href="@{/css/users.css}">
 </head>
 <body>
 
 <div th:replace="fragments/header :: main-header"></div>
 
 <div class="container">
-  <h2>Пользователи</h2>
+
+  <div class="page-header">
+    <h1>Пользователи</h1>
+  </div>
 
   <!-- ошибки -->
   <div th:if="${errors}" class="alert error">
     <div th:each="err : ${errors}" th:text="${err}"></div>
   </div>
 
-  <form method="get" th:action="@{/admin/users}">
+  <form method="get" th:action="@{/admin/users}" class="filter-form">
     <label>Фильтр по роли:</label>
     <select name="role" onchange="this.form.submit()">
       <option th:each="r : ${rolesFilter}"
@@ -32,47 +37,36 @@
 
       <div class="user-info">
         <div class="user-email" th:text="${user.email}"></div>
-        <div class="user-name">
-          <span th:text="${user.lastName + ' ' + user.firstName + ' ' + user.middleName}"></span>
-        </div>
+        <div class="user-name" th:text="${user.lastName + ' ' + user.firstName + ' ' + user.middleName}"></div>
         <div class="user-role" th:text="${user.role}"></div>
       </div>
 
       <div class="user-actions">
-
-        <!-- кнопка "Сделать врачом" только для пациентов -->
         <a th:if="${user.role.name() == 'PATIENT'}"
            th:href="@{'/admin/doctors/create?userId=' + ${user.id}}">
-          <button class="btn">Сделать врачом</button>
+          <button class="btn primary">Сделать врачом</button>
         </a>
 
-        <!-- кнопка "Сделать админом" только для пациентов -->
         <form th:if="${user.role.name() == 'PATIENT'}"
               th:action="@{'/admin/users/' + ${user.id} + '/role'}"
               method="post">
           <input type="hidden" name="role" value="ADMIN"/>
-          <button class="btn secondary" type="submit">
-            Сделать админом
-          </button>
+          <button class="btn secondary" type="submit">Сделать админом</button>
         </form>
 
-        <!-- удалить/редактировать любого пользователя -->
+        <a th:if="${user.role.name() == 'DOCTOR'}"
+           th:href="@{'/admin/schedules/doctor/' + ${user.id()}}">
+          <button class="btn primary">Настроить расписание</button>
+        </a>
+
         <div class="horizontal-buttons-container">
-          <form th:action="@{'/admin/users/' + ${user.id} + '/edit'}"
-                method="get">
-            <button class="btn" type="submit">
-              Редактировать
-            </button>
+          <form th:action="@{'/admin/users/' + ${user.id} + '/edit'}" method="get">
+            <button class="btn primary" type="submit">Редактировать</button>
           </form>
-          <form th:action="@{'/admin/users/' + ${user.id} + '/delete'}"
-                method="post">
-            <button class="btn danger" type="submit">
-              Уничтожить
-            </button>
+          <form th:action="@{'/admin/users/' + ${user.id} + '/delete'}" method="post">
+            <button class="btn danger" type="submit">Удалить</button>
           </form>
         </div>
-
-
       </div>
 
     </div>

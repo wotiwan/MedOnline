@@ -1,0 +1,139 @@
+.form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    margin-top: 20px;
+
+    border: 1px solid #eef2f7;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* =========================
+   FORM
+   ========================= */
+.form-card .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.form-card label {
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.form-card input,
+.form-card select,
+.form-card textarea {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+
+    font-size: 14px;
+    color: #1e293b;
+    width: 100%;
+
+    transition: all 0.15s ease;
+}
+
+/* focus state — ключ для “прод ощущения” */
+.form-card input:focus,
+.form-card select:focus,
+.form-card textarea:focus {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+}
+
+.form-card textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+/* =========================
+   BUTTON
+   ========================= */
+.form-card .btn {
+    margin-top: 14px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    width: 100%;
+
+    transition: all 0.2s ease;
+}
+
+.form-card .btn.primary {
+    background: #0f766e;
+    color: white;
+    box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25);
+}
+
+.form-card .btn.primary:hover {
+    background: #0d5f59;
+    transform: translateY(-1px);
+}
+
+/* =========================
+   ALERTS (сильно улучшены)
+   ========================= */
+.alert {
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    border: 1px solid transparent;
+}
+
+/* error */
+.alert.error {
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.2);
+    color: #b91c1c;
+}
+
+/* success */
+.alert.success {
+    background: rgba(15, 118, 110, 0.08);
+    border-color: rgba(15, 118, 110, 0.2);
+    color: #0f766e;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+.page-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    color: #0f172a;
+}
+
+/* =========================
+   USER INFO CARD
+   ========================= */
+.user-info-card {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+
+    border: 1px solid #e2e8f0;
+}
+
+.user-info-card p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #475569;
+}
+
+/* чуть лучше читаемость */
+.user-info-card strong {
+    color: #0f172a;
+}

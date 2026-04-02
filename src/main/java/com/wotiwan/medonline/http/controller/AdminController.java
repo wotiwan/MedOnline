@@ -147,18 +147,18 @@ public class AdminController {
 
     // Страница с настройкой расписания конкретного врача
     // TODO: doctor_id и user_id - не одно и то же, из-за этого будет путаница. Стоит как-то поменять
-    @GetMapping("/schedules/doctor/{doctorId}")
-    public String doctorSchedulePage(@PathVariable Integer doctorId, Model model) {
+    @GetMapping("/schedules/doctor/{userId}")
+    public String doctorSchedulePage(@PathVariable Integer userId, Model model) {
 
-        DoctorReadDto doctor = doctorService.findById(doctorId)
+        DoctorReadDto doctor = doctorService.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
 
         // Шаблоны расписания для врача
-        List<ScheduleTemplateReadDto> templates = scheduleService.findAllScheduleTemplatesByDoctorId(doctorId);
+        List<ScheduleTemplateReadDto> templates = scheduleService.findAllScheduleTemplatesByDoctorId(doctor.id());
 
         model.addAttribute("doctor", doctor);
         model.addAttribute("templates", templates);
-        model.addAttribute("newTemplate", new ScheduleTemplateCreateDto(doctorId, null, null, null, null));
+        model.addAttribute("newTemplate", new ScheduleTemplateCreateDto(doctor.id(), null, null, null, null));
         model.addAttribute("hasTemplates", !templates.isEmpty());
         model.addAttribute("daysOfWeek", DayOfWeek.values());
 
@@ -169,26 +169,28 @@ public class AdminController {
     public String createTemplate(@PathVariable Integer doctorId,
                                  @ModelAttribute @Validated ScheduleTemplateCreateDto newTemplate,
                                  RedirectAttributes redirectAttributes) {
+        DoctorReadDto doctor = doctorService.findById(doctorId).orElseThrow();
         try {
             scheduleService.createScheduleTemplate(newTemplate);
             redirectAttributes.addFlashAttribute("success", "Шаблон создан");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/admin/schedules/doctor/" + doctorId;
+        return "redirect:/admin/schedules/doctor/" + doctor.userId();
     }
 
     @PostMapping("/schedules/doctor/{doctorId}/template/{templateId}/delete")
     public String deleteTemplate(@PathVariable Integer doctorId,
                                  @PathVariable Integer templateId,
                                  RedirectAttributes redirectAttributes) {
+        DoctorReadDto doctor = doctorService.findById(doctorId).orElseThrow();
         try {
             scheduleService.deleteTemplateById(templateId);
             redirectAttributes.addFlashAttribute("success", "Шаблон удалён");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/admin/schedules/doctor/" + doctorId;
+        return "redirect:/admin/schedules/doctor/" + doctor.userId();
     }
 
     // Генерация расписания на n дней вперёд
@@ -196,26 +198,28 @@ public class AdminController {
     public String generateSchedule(@PathVariable Integer doctorId,
                                    @RequestParam(defaultValue = "7") int daysAhead,
                                    RedirectAttributes redirectAttributes) {
+        DoctorReadDto doctor = doctorService.findById(doctorId).orElseThrow();
         try {
             scheduleService.generateSchedules(doctorId, daysAhead);
             redirectAttributes.addFlashAttribute("success", "Расписание сгенерировано");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/admin/schedules/doctor/" + doctorId;
+        return "redirect:/admin/schedules/doctor/" + doctor.userId();
     }
 
     // Удаление расписания (всё) у врача
     @PostMapping("/schedules/doctor/{doctorId}/delete")
     public String deleteSchedule(@PathVariable Integer doctorId,
                                  RedirectAttributes redirectAttributes) {
+        DoctorReadDto doctor = doctorService.findById(doctorId).orElseThrow();
         try {
             scheduleService.deleteAllByDoctor(doctorId);
             redirectAttributes.addFlashAttribute("success", "Расписание удалено");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/admin/schedules/doctor/" + doctorId;
+        return "redirect:/admin/schedules/doctor/" + doctor.userId();
     }
 
 }

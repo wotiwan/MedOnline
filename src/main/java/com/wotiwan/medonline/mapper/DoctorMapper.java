@@ -12,6 +12,9 @@ public class DoctorMapper implements Mapper<Doctor, DoctorReadDto>{
         return new DoctorReadDto(
                 object.getId(),
                 object.getUser().getId(),
+                object.getUser().getFirstName(),
+                object.getUser().getMiddleName(),
+                object.getUser().getLastName(),
                 object.getSpecialization().getId(),
                 object.getDescription()
         );

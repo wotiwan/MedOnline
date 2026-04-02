@@ -1,51 +1,61 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Создание врача</title>
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/doctor-create.css}">
 </head>
 <body>
 
 <div th:replace="fragments/header :: main-header"></div>
 
 <div class="container">
-    <h2>Создание врача</h2>
 
-    <!-- сообщения -->
-    <div th:if="${error}" class="alert error">
-        <span th:text="${error}"></span>
+    <div class="page-header">
+        <h1>Создание врача</h1>
     </div>
 
-    <div th:if="${success}" class="alert success">
-        <span th:text="${success}"></span>
+    <div class="form-card">
+
+        <!-- сообщения -->
+        <div th:if="${error}" class="alert error">
+            <span th:text="${error}"></span>
+        </div>
+
+        <div th:if="${success}" class="alert success">
+            <span th:text="${success}"></span>
+        </div>
+
+        <!-- инфо о пользователе -->
+        <div class="user-info-card">
+            <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+            <p><strong>Имя:</strong> <span th:text="${user.firstName}"></span></p>
+        </div>
+
+        <form th:action="@{/admin/doctors/create}" th:object="${doctor}" method="post">
+
+            <input type="hidden" th:field="*{userId}" />
+
+            <div class="form-group">
+                <label>Специализация</label>
+                <select th:field="*{specializationId}" required>
+                    <option th:each="s : ${specializations}"
+                            th:value="${s.id}"
+                            th:text="${s.name}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea th:field="*{description}"></textarea>
+            </div>
+
+            <button type="submit" class="btn primary">Создать врача</button>
+        </form>
     </div>
 
-    <!-- инфа о пользователе -->
-    <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
-    <p><strong>Имя:</strong> <span th:text="${user.firstName}"></span></p>
-
-    <form th:action="@{/admin/doctors/create}" th:object="${doctor}" method="post">
-
-        <input type="hidden" th:field="*{userId}" />
-
-        <div>
-            <label>Специализация</label>
-            <select th:field="*{specializationId}" required>
-                <option th:each="s : ${specializations}"
-                        th:value="${s.id}"
-                        th:text="${s.name}">
-                </option>
-            </select>
-        </div>
-
-        <div>
-            <label>Описание</label>
-            <textarea th:field="*{description}"></textarea>
-        </div>
-
-        <button type="submit">Создать врача</button>
-    </form>
 </div>
-
 </body>
 </html>

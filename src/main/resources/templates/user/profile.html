@@ -4,111 +4,91 @@
 <head>
   <meta charset="UTF-8">
   <title>Профиль пользователя</title>
-  <link rel="stylesheet" th:href="@{/css/main.css}">
-  <link rel="stylesheet" th:href="@{/css/appointments.css}">
-  <style>
-    .edit-form { display: none; margin-top: 20px; }
-    .form-group { margin-bottom: 12px; }
-    input[type="text"], input[type="date"] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; }
-    button { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; }
-    .save-btn { background-color: #27ae60; color: white; }
-    .cancel-btn { background-color: #7f8c8d; color: white; margin-left: 8px; }
-  </style>
+  <link rel="stylesheet" th:href="@{/css/base.css}">
+  <link rel="stylesheet" th:href="@{/css/profile.css}">
 </head>
 <body>
-<div class="container">
-  <div th:replace="fragments/header :: main-header"></div>
-  <h2>Профиль пользователя</h2>
+<div th:replace="fragments/header :: main-header"></div>
 
-  <!-- Данные пользователя -->
-  <div class="user-info">
-    <p><strong>Электронная почта:</strong> <span th:text="${user.email}">user@example.com</span></p>
-    <p><strong>Имя:</strong> <span th:text="${user.firstName}">Имя</span></p>
-    <p><strong>Отчество:</strong> <span th:text="${user.middleName}">Отчество</span></p>
-    <p><strong>Фамилия:</strong> <span th:text="${user.lastName}">Фамилия</span></p>
-    <p><strong>Дата рождения:</strong> <span th:text="${user.birthDate}">2000-01-01</span></p>
-    <p><strong>Роль:</strong> <span th:text="${user.role.name}">PATIENT</span></p>
+<div class="container profile-page">
+  <div class="page-header">
+    <h1>Профиль пользователя</h1>
   </div>
 
-  <!-- Кнопка редактирования -->
-  <button id="editBtn" style="background-color: #3498db; color: white;">Редактировать данные</button>
-
-  <!-- Форма редактирования -->
-  <form th:action="@{/profile}" th:object="${user}" method="post" class="edit-form" id="editForm">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-    <div class="form-group">
-      <label>Имя</label>
-      <input type="text" th:field="*{firstName}" required/>
+  <!-- Карточка пользователя -->
+  <div class="user-card">
+    <div class="user-info">
+      <p><strong>Электронная почта:</strong> <span th:text="${user.email}"></span></p>
+      <p><strong>Имя:</strong> <span th:text="${user.firstName}"></span></p>
+      <p><strong>Отчество:</strong> <span th:text="${user.middleName}"></span></p>
+      <p><strong>Фамилия:</strong> <span th:text="${user.lastName}"></span></p>
+      <p><strong>Дата рождения:</strong> <span th:text="${user.birthDate}"></span></p>
+      <p><strong>Роль:</strong> <span th:text="${user.role.name}"></span></p>
     </div>
 
-    <div class="form-group">
-      <label>Отчество</label>
-      <input type="text" th:field="*{middleName}"/>
-    </div>
+    <button id="editBtn" class="btn primary">Редактировать данные</button>
 
-    <div class="form-group">
-      <label>Фамилия</label>
-      <input type="text" th:field="*{lastName}" required/>
-    </div>
+    <form th:action="@{/profile}" th:object="${user}" method="post" class="edit-form" id="editForm">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-    <div class="form-group">
-      <label>Дата рождения</label>
-      <input type="date" th:field="*{birthDate}" required/>
-    </div>
+      <div class="form-group">
+        <label>Имя</label>
+        <input type="text" th:field="*{firstName}" required/>
+      </div>
 
-    <button type="submit" class="save-btn">Сохранить</button>
-    <button type="button" class="cancel-btn" id="cancelBtn">Отмена</button>
-  </form>
+      <div class="form-group">
+        <label>Отчество</label>
+        <input type="text" th:field="*{middleName}"/>
+      </div>
 
-  <h3>Мои записи</h3>
+      <div class="form-group">
+        <label>Фамилия</label>
+        <input type="text" th:field="*{lastName}" required/>
+      </div>
 
-  <div th:if="${#lists.isEmpty(appointments)}">
-    <p>У вас пока нет записей</p>
+      <div class="form-group">
+        <label>Дата рождения</label>
+        <input type="date" th:field="*{birthDate}" required/>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn save-btn">Сохранить</button>
+        <button type="button" class="btn cancel-btn" id="cancelBtn">Отмена</button>
+      </div>
+    </form>
   </div>
 
-  <table th:if="${!#lists.isEmpty(appointments)}">
-    <tr>
-      <th>Врач</th>
-      <th>Специализация</th>
-      <th>Дата</th>
-      <th>Время</th>
-      <th>Статус</th>
-    </tr>
+  <!-- Таблица записей -->
+  <div class="appointments-section">
+    <h2>Мои записи</h2>
 
-    <tr th:each="a : ${appointments}"
-        th:onclick="|window.location.href='/appointments/${a.id}'|"
-        class="clickable-row">
+    <div th:if="${#lists.isEmpty(appointments)}" class="empty-state">
+      <p>У вас пока нет записей</p>
+    </div>
 
-      <td th:text="${a.doctor.user.firstName} + ' ' + ${a.doctor.user.lastName}"></td>
+    <div th:if="${!#lists.isEmpty(appointments)}" class="appointments-grid">
+      <div th:each="a : ${appointments}" class="appointment-card clickable-row"
+           th:onclick="|window.location.href='/appointments/${a.id}'|">
 
-      <td th:text="${a.doctor.specialization.name}"></td>
+        <div class="appointment-info">
+          <p><strong>Врач:</strong> <span th:text="${a.doctor.user.firstName} + ' ' + ${a.doctor.user.lastName}"></span></p>
+          <p><strong>Специализация:</strong> <span th:text="${a.doctor.specialization.name}"></span></p>
+          <p><strong>Дата:</strong> <span th:text="${#temporals.format(a.timeSlot.startTime, 'dd.MM.yyyy')}"></span></p>
+          <p><strong>Время:</strong> <span th:text="${#temporals.format(a.timeSlot.startTime, 'HH:mm')}"></span> -
+            <span th:text="${#temporals.format(a.timeSlot.endTime, 'HH:mm')}"></span></p>
+        </div>
 
-      <td th:text="${#temporals.format(a.timeSlot.startTime, 'dd.MM.yyyy')}"></td>
-
-      <td>
-        <span th:text="${#temporals.format(a.timeSlot.startTime, 'HH:mm')}"></span>
-        -
-        <span th:text="${#temporals.format(a.timeSlot.endTime, 'HH:mm')}"></span>
-      </td>
-
-      <td>
-        <span class="status"
-              th:classappend="
+        <div class="appointment-status">
+          <span class="status"
+                th:classappend="
                 ${a.status.name() == 'BOOKED'} ? ' booked' :
                 (${a.status.name() == 'CANCELLED'} ? ' cancelled' : ' completed')"
-              th:text="${a.status}">
-        </span>
-      </td>
-
-    </tr>
-  </table>
-
-  <!-- Logout -->
-  <form th:action="@{/logout}" method="post" style="margin-top: 20px;">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-    <button type="submit" style="background-color: #e74c3c; color: white;">Выйти</button>
-  </form>
+                th:text="${a.status}">
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>

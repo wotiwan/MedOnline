@@ -7,25 +7,42 @@
 <body>
 <!-- Фрагмент шапки -->
 <div th:fragment="main-header">
-    <header style="background-color: #3498db; color: white; padding: 16px 24px; text-align: center;">
-        <span>Медицинский портал</span>
-        <nav style="margin-top: 8px;">
-            <a th:href="@{/}" style="color: white; margin-right: 16px;">Главная</a>
+    <header class="app-header">
+        <div class="header-inner">
 
-            <!-- Показываем админ-панель только для ADMIN -->
-            <span sec:authorize="hasRole('ADMIN')">
-                <a th:href="@{/admin}" style="color: white; margin-right: 16px;">Админ</a>
-            </span>
+            <!-- Логотип -->
+            <div class="logo">
+                <a th:href="@{/}">MedOnline</a>
+            </div>
 
-            <!-- Профиль для всех авторизованных -->
-            <span sec:authorize="isAuthenticated()">
-                <a th:href="@{/profile}" style="color: white; margin-right: 16px;">Профиль</a>
-                <form th:action="@{/logout}" method="post" style="display:inline;">
+            <!-- Навигация -->
+            <nav class="nav-links">
+                <span>
+                    <a th:href="@{/}" class="nav-link">Главная</a>
+                </span>
+
+                <span sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin}" class="nav-link">Админ</a>
+                </span>
+
+                <span sec:authorize="hasRole('DOCTOR')">
+                    <a th:href="@{/doctor/appointments}" class="nav-link">Расписание</a>
+                </span>
+
+                <span sec:authorize="isAuthenticated()">
+                    <a th:href="@{/profile}" class="nav-link">Профиль</a>
+                </span>
+            </nav>
+
+            <!-- Правая часть -->
+            <div class="nav-actions" sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <button type="submit" style="background: none; border: none; color: white; cursor: pointer;">Выйти</button>
+                    <button type="submit" class="logout-btn">Выйти</button>
                 </form>
-            </span>
-        </nav>
+            </div>
+
+        </div>
     </header>
 </div>
 </body>

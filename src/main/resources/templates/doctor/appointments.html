@@ -1,13 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Создание врача</title>
+  <link rel="stylesheet" th:href="@{/css/base.css}">
+  <link rel="stylesheet" th:href="@{/css/doctor-appointments.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: main-header"></div>
+
 <div class="container">
-  <h2>Записи на сегодня</h2>
 
-  <div class="card" th:each="a : ${appointments}">
-    <p><b>Пациент:</b> <span th:text="${a.patient.firstName}"></span></p>
-    <p><b>Время:</b> <span th:text="${a.timeSlot.startTime}"></span></p>
-    <p><b>Статус:</b> <span th:text="${a.status}"></span></p>
+  <div class="page-header">
+    <h1>Записи на сегодня</h1>
+  </div>
 
-    <a th:href="@{'/doctor/appointments/' + ${a.id}}">
-      <button class="btn">Открыть</button>
-    </a>
+  <div th:if="${#lists.isEmpty(appointments)}" class="empty-state">
+    <p>Сегодня нет записей</p>
+  </div>
+
+  <div class="appointments-grid">
+    <div class="appointment-card" th:each="a : ${appointments}">
+
+      <p><b>Пациент:</b> <span th:text="${a.patient.firstName} + ' ' + ${a.patient.lastName}"></span></p>
+      <p><b>Время:</b> <span th:text="${#temporals.format(a.timeSlot.startTime,'HH:mm')}"></span></p>
+      <p><b>Статус:</b>
+        <span class="status"
+              th:classappend="
+                        ${a.status.name() == 'BOOKED'} ? ' booked' :
+                        (${a.status.name() == 'CANCELLED'} ? ' cancelled' : ' completed')"
+              th:text="${a.status}">
+                </span>
+      </p>
+
+      <a th:href="@{'/doctor/appointments/' + ${a.id}}">
+        <button class="btn primary">Открыть</button>
+      </a>
+    </div>
   </div>
 </div>
+
+</body>
+</html>

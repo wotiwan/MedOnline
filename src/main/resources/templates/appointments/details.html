@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Детали записи</title>
-    <link rel="stylesheet" th:href="@{/css/appointments.css}">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/appointment-details.css}">
 </head>
 <body>
 
@@ -10,9 +12,11 @@
 
 <div class="container">
 
-    <h2>Информация о записи</h2>
+    <div class="page-header">
+        <h1>Информация о записи</h1>
+    </div>
 
-    <div class="card">
+    <div class="appointment-card">
 
         <p><strong>Врач:</strong>
             <span th:text="${appointment.doctor.user.firstName} + ' ' + ${appointment.doctor.user.lastName}"></span>
@@ -31,11 +35,11 @@
             -
             <span th:text="${#temporals.format(appointment.timeSlot.endTime, 'HH:mm')}"></span>
         </p>
+
         <p><strong>Заключение:</strong>
             <span th:text="${appointment.consultationResult != null and !#strings.isEmpty(appointment.consultationResult)
                 ? appointment.consultationResult
-                : 'Появится позже'}">
-            </span>
+                : 'Появится позже'}"></span>
         </p>
 
         <p><strong>Статус:</strong>
@@ -49,14 +53,9 @@
 
         <!-- кнопка отмены -->
         <form th:if="${appointment.status.name() == 'BOOKED'}"
-              th:action="@{/appointments/cancel}"
-              method="post">
-
+              th:action="@{/appointments/cancel}" method="post">
             <input type="hidden" name="appointmentId" th:value="${appointment.id}"/>
-
-            <button class="cancel-btn" type="submit">
-                Отменить запись
-            </button>
+            <button class="btn cancel-btn" type="submit">Отменить запись</button>
         </form>
 
     </div>

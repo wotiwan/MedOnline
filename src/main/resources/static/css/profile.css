@@ -1,0 +1,171 @@
+.profile-page {
+    margin-top: 40px;
+    padding: 0 20px;
+}
+
+/* -------------------- Карточка пользователя -------------------- */
+.user-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.user-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+}
+
+.user-info p {
+    margin: 10px 0;
+    font-size: 15px;
+    color: #475569;
+}
+
+/* -------------------- Форма редактирования -------------------- */
+.edit-form {
+    display: none;
+    margin-top: 24px;
+    background: #f9fafb;
+    padding: 20px 24px;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+input[type="text"],
+input[type="date"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+    color: #1f2937;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15,118,110,0.15);
+}
+
+/* -------------------- Кнопки -------------------- */
+.btn {
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn.primary {
+    background: #0f766e;
+    color: white;
+    box-shadow: 0 2px 10px rgba(15,118,110,0.25);
+}
+
+.btn.primary:hover {
+    background: #0d5f59;
+    transform: translateY(-1px);
+}
+
+.save-btn {
+    background: #16a34a;
+    color: white;
+}
+
+.save-btn:hover {
+    background: #15803d;
+    transform: translateY(-1px);
+}
+
+.cancel-btn {
+    background: #6b7280;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background: #4b5563;
+    transform: translateY(-1px);
+}
+
+/* -------------------- Сетка записей -------------------- */
+.appointments-section h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+    color: #1f2937;
+}
+
+.appointments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* -------------------- Карточка записи -------------------- */
+.appointment-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #eef2f7;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+}
+
+.appointment-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+}
+
+.appointment-info p {
+    margin: 6px 0;
+    font-size: 14px;
+    color: #475569;
+}
+/* =========================
+   СТАТУСЫ (более "дорогие")
+   ========================= */
+.status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* booked */
+.status.booked {
+    background: rgba(15, 118, 110, 0.1);
+    color: #0f766e;
+}
+
+/* cancelled */
+.status.cancelled {
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+}
+
+/* completed */
+.status.completed {
+    background: rgba(22, 163, 74, 0.1);
+    color: #16a34a;
+}

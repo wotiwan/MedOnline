@@ -1,76 +1,105 @@
+/* -------------------- Базовые настройки -------------------- */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f4f8;
+    background-color: #eef2f7;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
 }
 
+/* -------------------- Контейнер логина -------------------- */
 .login-container {
     background-color: #ffffff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    padding: 48px 36px;
+    border-radius: 16px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
     width: 360px;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
+/* -------------------- Заголовок -------------------- */
 h2 {
     text-align: center;
-    color: #2c3e50;
-    margin-bottom: 24px;
+    color: #1f2937;
+    margin-bottom: 32px;
+    font-size: 26px;
+    font-weight: 600;
 }
 
+/* -------------------- Поля формы -------------------- */
 .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 label {
-    display: block;
-    margin-bottom: 6px;
-    color: #34495e;
+    color: #4b5563;
     font-weight: 500;
+    font-size: 14px;
 }
 
 input[type="text"],
 input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #dcdfe6;
-    border-radius: 6px;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
     font-size: 14px;
+    color: #1f2937;
+    transition: border-color 0.25s, box-shadow 0.25s;
 }
 
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15,118,110,0.15);
+}
+
+/* -------------------- Кнопка входа -------------------- */
 button {
     width: 100%;
-    padding: 12px;
-    background-color: #3498db;
+    padding: 14px;
+    background-color: #0f766e;
     color: white;
-    font-weight: bold;
+    font-weight: 600;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.25s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #0d5f59;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(15, 118, 110, 0.3);
 }
 
+/* -------------------- Ошибка -------------------- */
 .error {
-    color: #e74c3c;
+    color: #dc2626;
     text-align: center;
     margin-bottom: 16px;
+    font-weight: 500;
+    font-size: 14px;
 }
 
+/* -------------------- Ссылка на регистрацию -------------------- */
 .register-link {
     display: block;
     text-align: center;
-    margin-top: 12px;
-    color: #3498db;
+    margin-top: 16px;
+    color: #0f766e;
+    font-weight: 500;
     text-decoration: none;
+    transition: color 0.25s;
 }
 
 .register-link:hover {
     text-decoration: underline;
+    color: #0d5f59;
 }

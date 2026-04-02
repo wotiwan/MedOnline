@@ -1,67 +1,77 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Создать врача с нуля</title>
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/doctor-full-create.css}">
 </head>
 <body>
 <div th:replace="fragments/header :: main-header"></div>
 
 <div class="container">
-    <h2>Создать врача с нуля</h2>
 
-    <div th:if="${error}" class="alert error" th:text="${error}"></div>
-    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+    <div class="page-header">
+        <h1>Создать врача с нуля</h1>
+    </div>
 
-    <form th:action="@{/admin/doctors/full/create}" th:object="${doctor}" method="post">
+    <div class="form-card">
 
-        <div>
-            <label>Email</label>
-            <input type="email" th:field="*{email}" required>
-        </div>
+        <div th:if="${error}" class="alert error" th:text="${error}"></div>
+        <div th:if="${success}" class="alert success" th:text="${success}"></div>
 
-        <div>
-            <label>Пароль</label>
-            <input type="password" th:field="*{password}" required>
-        </div>
+        <form th:action="@{/admin/doctors/full/create}" th:object="${doctor}" method="post">
 
-        <div>
-            <label>Имя</label>
-            <input type="text" th:field="*{firstName}" required>
-        </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" th:field="*{email}" required>
+            </div>
 
-        <div>
-            <label>Отчество</label>
-            <input type="text" th:field="*{middleName}">
-        </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" th:field="*{password}" required>
+            </div>
 
-        <div>
-            <label>Фамилия</label>
-            <input type="text" th:field="*{lastName}" required>
-        </div>
+            <div class="form-group">
+                <label>Имя</label>
+                <input type="text" th:field="*{firstName}" required>
+            </div>
 
-        <div>
-            <label>Дата рождения</label>
-            <input type="date" th:field="*{birthDate}" required>
-        </div>
+            <div class="form-group">
+                <label>Отчество</label>
+                <input type="text" th:field="*{middleName}">
+            </div>
 
-        <div>
-            <label>Специализация</label>
-            <select th:field="*{specializationId}" required>
-                <option th:each="s : ${specializations}"
-                        th:value="${s.id}"
-                        th:text="${s.name}">
-                </option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label>Фамилия</label>
+                <input type="text" th:field="*{lastName}" required>
+            </div>
 
-        <div>
-            <label>Описание</label>
-            <textarea th:field="*{description}"></textarea>
-        </div>
+            <div class="form-group">
+                <label>Дата рождения</label>
+                <input type="date" th:field="*{birthDate}" required>
+            </div>
 
-        <button type="submit" class="btn">Создать врача</button>
-    </form>
+            <div class="form-group">
+                <label>Специализация</label>
+                <select th:field="*{specializationId}" required>
+                    <option th:each="s : ${specializations}"
+                            th:value="${s.id}"
+                            th:text="${s.name}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea th:field="*{description}"></textarea>
+            </div>
+
+            <button type="submit" class="btn primary">Создать врача</button>
+        </form>
+
+    </div>
+
 </div>
 </body>
 </html>

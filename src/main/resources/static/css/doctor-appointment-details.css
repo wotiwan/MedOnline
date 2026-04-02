@@ -1,0 +1,82 @@
+.page-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* карточка формы */
+.form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+
+    border: 1px solid #eef2f7;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+}
+
+/* группы */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+/* label */
+.form-group label {
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* поля */
+.form-group select,
+.form-group textarea,
+.form-group input {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+
+    font-size: 14px;
+    color: #1e293b;
+    width: 100%;
+
+    transition: all 0.15s ease;
+}
+
+/* фокус — ключевой момент */
+.form-group select:focus,
+.form-group textarea:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+}
+
+/* textarea */
+.form-group textarea {
+    resize: vertical;
+}
+
+/* =========================
+   КНОПКА (в новой системе)
+   ========================= */
+.btn.primary {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+
+    background: #0f766e;
+    color: white;
+
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25);
+}
+
+.btn.primary:hover {
+    background: #0d5f59;
+    transform: translateY(-1px);
+}

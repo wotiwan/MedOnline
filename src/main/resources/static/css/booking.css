@@ -1,0 +1,186 @@
+.page-header {
+    margin-bottom: 30px;
+}
+
+/* =========================
+   КОНТРОЛЫ
+   ========================= */
+.booking-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.date-input {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+/* =========================
+   НАВИГАЦИЯ
+   ========================= */
+.date-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-nav a {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.date-nav a:hover {
+    background: #e2e8f0;
+}
+
+/* =========================
+   СЕТКА
+   ========================= */
+.slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+}
+
+/* =========================
+   СЛОТ (база)
+   ========================= */
+.slot {
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+
+    border: 1px solid #e5e7eb;
+    background: white;
+    color: #1e293b;
+
+    transition: all 0.15s ease;
+}
+
+/* =========================
+   СВОБОДНЫЙ (акцент)
+   ========================= */
+.slot.free {
+    border-color: rgba(15, 118, 110, 0.25);
+    background: rgba(15, 118, 110, 0.06);
+    color: #0f766e;
+    cursor: pointer;
+}
+
+.slot.free:hover {
+    background: rgba(15, 118, 110, 0.12);
+    transform: translateY(-1px);
+}
+
+/* =========================
+   ВЫБРАННЫЙ
+   ========================= */
+.slot.selected {
+    border-color: #0f766e;
+    background: rgba(15, 118, 110, 0.15);
+    box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
+}
+
+/* =========================
+   ЗАНЯТЫЙ
+   ========================= */
+.slot.booked {
+    background: #f8fafc;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+}
+
+/* =========================
+   EMPTY
+   ========================= */
+.empty-state {
+    text-align: center;
+    margin-top: 30px;
+    color: #64748b;
+}
+
+/* =========================
+   MODAL (чуть дороже)
+   ========================= */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    background: rgba(15, 23, 42, 0.55);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+/* открытие */
+.modal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* окно */
+.modal-content {
+    background: white;
+    padding: 28px;
+    border-radius: 18px;
+    width: 360px;
+    max-width: 90%;
+
+    border: 1px solid #eef2f7;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+
+    transform: translateY(16px) scale(0.98);
+    transition: all 0.2s ease;
+}
+
+/* анимация */
+.modal.show .modal-content {
+    transform: translateY(0) scale(1);
+}
+
+/* заголовок */
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #0f172a;
+}
+
+/* текст */
+.modal-content p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #475569;
+}
+
+/* кнопки */
+.modal-content .btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* secondary */
+.modal-content .btn.secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.modal-content .btn.secondary:hover {
+    background: #cbd5e1;
+}

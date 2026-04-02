@@ -34,6 +34,7 @@ public class DoctorController {
         return "main/doctors";
     }
 
+    // TODO: Не пускать на страницу с префиксом /doctor никого кроме врачей
     @GetMapping("/doctor/appointments")
     public String doctorAppointments(Model model, Principal principal) {
 
@@ -49,6 +50,7 @@ public class DoctorController {
         return "doctor/appointments";
     }
 
+    // TODO: Запретить врачу смотреть чужие записи
     @GetMapping("/doctor/appointments/{id}")
     public String appointmentDetails(@PathVariable Integer id, Model model) {
         model.addAttribute("appointmentId", id);
@@ -56,6 +58,7 @@ public class DoctorController {
         return "doctor/appointment-details";
     }
 
+    // TODO: Запретить врачу менять чужие записи
     @PostMapping("doctor/appointments/{id}")
     public String update(@PathVariable Integer id,
                          @ModelAttribute AppointmentDoctorUpdateDto dto) {

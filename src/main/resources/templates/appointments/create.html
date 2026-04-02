@@ -1,105 +1,79 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
-  <title th:text="${doctor.id}">Врач</title>
-  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <title>Запись к врачу</title>
+
+  <link rel="stylesheet" th:href="@{/css/base.css}">
+  <link rel="stylesheet" th:href="@{/css/booking.css}">
 </head>
+
 <body>
 
+<!-- Header -->
 <div th:replace="fragments/header :: main-header"></div>
 
 <div class="container">
 
-  <h2>
-    Запись к врачу:
-    <span th:text="${doctor.id} + ' ' + ${doctor.id}"></span>
-  </h2>
+  <!-- Заголовок -->
+  <div class="page-header">
+    <h1>Запись к врачу</h1>
+    <p th:text="${doctor.lastName} + ' ' + ${doctor.firstName} + ' ' + ${doctor.middleName}"></p>
+  </div>
 
-  <!-- Выбор даты -->
-  <form method="get" th:action="@{/appointments/create}" class="date-picker">
-    <input type="hidden" name="doctorId" th:value="${doctorId}"/>
+  <!-- Контролы -->
+  <div class="booking-controls">
 
-    <label>Выберите дату:</label>
-    <input type="date"
-           name="date"
-           th:value="${date}"
-           onchange="this.form.submit()"/>
-  </form>
+    <!-- выбор даты -->
+    <form method="get" th:action="@{/appointments/create}">
+      <input type="hidden" name="doctorId" th:value="${doctorId}"/>
 
-  <!-- Навигация по дням -->
-  <div class="date-nav">
-    <a th:href="@{'/appointments/create?doctorId=' + ${doctorId} + '&date=' + ${date.minusDays(1)}}">
-      ← Назад
-    </a>
+      <input type="date"
+             name="date"
+             th:value="${date}"
+             class="date-input"
+             onchange="this.form.submit()"/>
+    </form>
 
-    <a th:href="@{'/appointments/create?doctorId=' + ${doctorId} + '&date=' + ${date.plusDays(1)}}">
-      Вперёд →
-    </a>
+    <!-- навигация -->
+    <div class="date-nav">
+      <a th:href="@{'/appointments/create?doctorId=' + ${doctorId} + '&date=' + ${date.minusDays(1)}}">←</a>
+
+      <span th:text="${date}"></span>
+
+      <a th:href="@{'/appointments/create?doctorId=' + ${doctorId} + '&date=' + ${date.plusDays(1)}}">→</a>
+    </div>
+
   </div>
 
   <!-- Слоты -->
-  <div class="slots">
+  <div class="slots-grid">
 
-    <div th:if="${#lists.isEmpty(slots)}">
-      <p>Нет доступных слотов на выбранную дату</p>
+    <div th:if="${#lists.isEmpty(slots)}" class="empty-state">
+      Нет доступных слотов
     </div>
 
     <div th:each="slot : ${slots}">
 
-      <!-- Свободный слот -->
-      <form th:if="${!slot.isBooked}"
-            th:action="@{/appointments/book}"
-            method="post">
+      <!-- свободный слот -->
+      <button th:if="${!slot.isBooked}"
+              class="slot free"
+              onclick="openModal(this)"
+              th:data-id="${slot.id}"
+              th:data-start="${#temporals.format(slot.startTime, 'HH:mm')}"
+              th:data-end="${#temporals.format(slot.endTime, 'HH:mm')}">
 
-        <input type="hidden" name="slotId" th:value="${slot.id}"/>
-
-        <button type="button"
-                class="slot-btn free"
-                onclick="openModal(this)"
-                th:data-id="${slot.id}"
-                th:data-start="${#temporals.format(slot.startTime, 'HH:mm')}"
-                th:data-end="${#temporals.format(slot.endTime, 'HH:mm')}">
-
-          <span th:text="${#temporals.format(slot.startTime, 'HH:mm')}"></span>
-          -
-          <span th:text="${#temporals.format(slot.endTime, 'HH:mm')}"></span>
-        </button>
-      </form>
-
-      <div id="modal" class="modal">
-        <div class="modal-content">
-
-          <h3>Подтверждение записи</h3>
-
-          <p><strong>Врач:</strong>
-            <span th:text="${doctor.id}"></span>
-          </p>
-
-          <p><strong>Специализация:</strong>
-            <span th:text="${doctor.specializationId}"></span>
-          </p>
-
-          <p><strong>Время:</strong>
-            <span id="modalTime"></span>
-          </p>
-
-          <form th:action="@{/appointments/book}" method="post">
-            <input type="hidden" name="slotId" id="modalSlotId"/>
-            <input type="hidden" name="doctorId" th:value="${doctorId}"/>
-            <input type="hidden" name="date" th:value="${date}"/>
-            <button type="submit">Записаться</button>
-          </form>
-
-          <button onclick="closeModal()">Отмена</button>
-
-        </div>
-      </div>
-
-      <!-- Занятый слот -->
-      <div th:if="${slot.isBooked}" class="booked">
         <span th:text="${#temporals.format(slot.startTime, 'HH:mm')}"></span>
-        -
+        —
+        <span th:text="${#temporals.format(slot.endTime, 'HH:mm')}"></span>
+      </button>
+
+      <!-- занятый слот -->
+      <div th:if="${slot.isBooked}" class="slot booked">
+        <span th:text="${#temporals.format(slot.startTime, 'HH:mm')}"></span>
+        —
         <span th:text="${#temporals.format(slot.endTime, 'HH:mm')}"></span>
       </div>
 
@@ -108,20 +82,68 @@
 
 </div>
 
+<!-- МОДАЛКА (одна!) -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+
+    <h3>Подтверждение записи</h3>
+
+    <p>
+      <strong>Врач:</strong>
+      <span th:text="${doctor.lastName} + ' ' + ${doctor.firstName} + ' ' + ${doctor.middleName}"></span>
+    </p>
+
+    <p>
+      <strong>Время:</strong>
+      <span id="modalTime"></span>
+    </p>
+
+    <form th:action="@{/appointments/book}" method="post">
+      <input type="hidden" name="slotId" id="modalSlotId"/>
+      <input type="hidden" name="doctorId" th:value="${doctorId}"/>
+      <input type="hidden" name="date" th:value="${date}"/>
+
+      <button type="submit" class="btn primary">Подтвердить</button>
+    </form>
+
+    <button onclick="closeModal()" class="btn secondary">Отмена</button>
+
+  </div>
+</div>
+
 <script>
   function openModal(button) {
+
+    document.querySelectorAll(".slot").forEach(el => {
+      el.classList.remove("selected");
+    });
+
+    button.classList.add("selected");
+
     const slotId = button.dataset.id;
     const start = button.dataset.start;
     const end = button.dataset.end;
 
-    document.getElementById("modal").style.display = "block";
+    const modal = document.getElementById("modal");
+
+    modal.classList.add("show");
+
     document.getElementById("modalSlotId").value = slotId;
     document.getElementById("modalTime").innerText = start + " - " + end;
   }
 
   function closeModal() {
-    document.getElementById("modal").style.display = "none";
+    document.getElementById("modal").classList.remove("show");
+  }
+
+  // закрытие по клику вне окна
+  window.onclick = function(event) {
+    const modal = document.getElementById("modal");
+    if (event.target === modal) {
+      closeModal();
+    }
   }
 </script>
+
 </body>
 </html>
