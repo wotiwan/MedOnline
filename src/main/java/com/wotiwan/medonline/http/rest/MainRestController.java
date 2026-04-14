@@ -16,6 +16,8 @@ public class MainRestController {
 
     private final SpecializationService specializationService;
 
+    // TODO: метод specializations(), контроллер DoctorController или SpecializationController
+
     @GetMapping
     public List<SpecializationReadDto> mainPage() {
         return specializationService.findAll();

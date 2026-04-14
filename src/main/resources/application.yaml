@@ -23,3 +23,7 @@ spring:
         format_sql: true
         hbm2ddl.auto: validate
     open-in-view: false
+
+jwt:
+  secret: 8cf7d3e8e6c45d8df94fbba76a1f4302b79d1483d5cf6f11b8f2e92d7e6e56cd
+  expiration: 86400
