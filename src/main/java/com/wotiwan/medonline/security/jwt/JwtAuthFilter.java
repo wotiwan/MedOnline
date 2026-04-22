@@ -38,18 +38,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // Достаём токен из заголовка
         token = authHeader.substring(7);
-        username = jwtUtils.extractUsername(token);
 
-        // Если нашли юзера по токену и токен ещё действителен - подтверждаем аутентификацию
-        // В SecurityContextHolder кладём токен аутентификации
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtUtils.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        try {
+            username = jwtUtils.extractUsername(token);
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            // Если нашли юзера по токену и токен ещё действителен - подтверждаем аутентификацию
+            // В SecurityContextHolder кладём токен аутентификации
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtUtils.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (Exception e) {
+            // В случае если токен истечёт, прилетит исключение. В таком случае мы должны вернуть 401 ошибку пользователю
+            // За нас это сделает фильтр чейн в SecurityConfiguration
+            SecurityContextHolder.clearContext();
+            filterChain.doFilter(request, response);
+            return;
         }
 
         filterChain.doFilter(request, response);
