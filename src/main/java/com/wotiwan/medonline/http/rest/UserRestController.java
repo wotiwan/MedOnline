@@ -1,35 +1,39 @@
 package com.wotiwan.medonline.http.rest;
 
-import com.wotiwan.medonline.dto.UserCreateDto;
-import com.wotiwan.medonline.dto.UserEditDto;
-import com.wotiwan.medonline.dto.UserReadDto;
+import com.wotiwan.medonline.database.entity.Appointment;
+import com.wotiwan.medonline.dto.*;
+import com.wotiwan.medonline.security.user.SecurityUser;
 import com.wotiwan.medonline.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserRestController {
     private final UserService userService;
 
-    @GetMapping("/{id}")
+    // TODO: Запретить не админам ходить по путям /users
+    @GetMapping("/users/{id}")
     public UserReadDto findById(@PathVariable("id") Integer id) {
         return userService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public UserReadDto create(@Validated @RequestBody UserCreateDto user) { // Зач реквест боди?
         return userService.create(user);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/users/{id}")
     public UserReadDto update(@PathVariable("id") Integer id,
                               @Validated @RequestBody UserEditDto user) { // Зач реквест боди?
         return userService.update(id, user)
@@ -42,4 +46,19 @@ public class UserRestController {
 //            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 //        }
 //    }
+
+
+
+    @GetMapping("/profile")
+    public ProfileResponse profilePage(@AuthenticationPrincipal SecurityUser securityUser) {
+
+        UserReadDto user = userService.findByEmail(securityUser.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        List<AppointmentReadDto> appointments =
+                userService.findAllUserAppointmentsByUserId(securityUser.getUser().getId());
+
+        return new ProfileResponse(user, appointments);
+    }
+
 }

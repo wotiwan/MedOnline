@@ -5,9 +5,11 @@ import com.wotiwan.medonline.database.entity.Role;
 import com.wotiwan.medonline.database.entity.User;
 import com.wotiwan.medonline.database.repository.AppointmentRepository;
 import com.wotiwan.medonline.database.repository.UserRepository;
+import com.wotiwan.medonline.dto.AppointmentReadDto;
 import com.wotiwan.medonline.dto.UserCreateDto;
 import com.wotiwan.medonline.dto.UserEditDto;
 import com.wotiwan.medonline.dto.UserReadDto;
+import com.wotiwan.medonline.mapper.AppointmentMapper;
 import com.wotiwan.medonline.mapper.UserCreateMapper;
 import com.wotiwan.medonline.mapper.UserEditMapper;
 import com.wotiwan.medonline.mapper.UserReadMapper;
@@ -38,6 +40,7 @@ public class UserService implements UserDetailsService {
     private final UserEditMapper userEditMapper;
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
+    private final AppointmentMapper appointmentMapper;
 
     public Optional<UserReadDto> findById(Integer id) {
         return userRepository.findById(id)
@@ -118,6 +121,13 @@ public class UserService implements UserDetailsService {
 
         return appointmentRepository
                 .findAllByPatientIdOrderByTimeSlot_StartTimeDesc(user.getId());
+    }
+
+    public List<AppointmentReadDto> findAllUserAppointmentsByUserId(Integer id) {
+        return appointmentRepository
+                .findAllByPatientIdOrderByTimeSlot_StartTimeDesc(id)
+                .stream().map(appointmentMapper::map)
+                .toList();
     }
 
 }
