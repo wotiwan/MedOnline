@@ -7,6 +7,7 @@ import com.wotiwan.medonline.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,20 +21,22 @@ import java.util.List;
 public class UserRestController {
     private final UserService userService;
 
-    // TODO: Запретить не админам ходить по путям /users
     @GetMapping("/users/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public UserReadDto findById(@PathVariable("id") Integer id) {
         return userService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping(path = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public UserReadDto create(@Validated @RequestBody UserCreateDto user) { // Зач реквест боди?
         return userService.create(user);
     }
 
     @PutMapping("/users/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public UserReadDto update(@PathVariable("id") Integer id,
                               @Validated @RequestBody UserEditDto user) { // Зач реквест боди?
         return userService.update(id, user)
