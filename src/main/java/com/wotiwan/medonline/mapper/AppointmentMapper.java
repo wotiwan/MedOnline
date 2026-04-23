@@ -11,8 +11,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AppointmentMapper implements Mapper<Appointment, AppointmentReadDto>{
 
+    // TODO: Вынести логику мапперов в сервисный класс?
     private final UserReadMapper userReadMapper;
     private final DoctorMapper doctorMapper;
+    private final TimeSlotMapper timeSlotMapper;
 
     @Override
     public AppointmentReadDto map(Appointment object) {
@@ -20,7 +22,7 @@ public class AppointmentMapper implements Mapper<Appointment, AppointmentReadDto
                 object.getId(),
                 userReadMapper.map(object.getPatient()),
                 doctorMapper.map(object.getDoctor()),
-                object.getTimeSlot(),
+                timeSlotMapper.map(object.getTimeSlot()),
                 object.getStatus(),
                 object.getConsultationResult(),
                 object.getCreatedAt()
