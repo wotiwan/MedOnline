@@ -64,4 +64,14 @@ public class UserRestController {
         return new ProfileResponse(user, appointments);
     }
 
+    @PutMapping("/profile")
+    public ProfileResponse profilePageEdit(@AuthenticationPrincipal SecurityUser securityUser,
+                                           @Validated @RequestBody UserEditDto userEdit) {
+
+        userService.update(securityUser.getUser().getId(), userEdit)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return profilePage(securityUser);
+    }
+
 }
