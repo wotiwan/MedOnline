@@ -23,7 +23,9 @@ public class SpecializationService {
                 .toList();
     }
 
-    public Optional<Specialization> findById(Integer specializationId) {
-        return specializationRepository.findById(specializationId);
+    public SpecializationReadDto findById(Integer specializationId) {
+        return specializationRepository.findById(specializationId)
+                .map(specializationReadMapper::map)
+                .orElseThrow();
     }
 }

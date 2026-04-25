@@ -22,17 +22,17 @@ public class DoctorController {
     private final UserService userService;
     private final SpecializationService specializationService;
 
-    @GetMapping("/doctors")
-    public String doctors(@RequestParam Integer specializationId, Model model) {
-        model.addAttribute("doctors",
-                doctorService.findAllBySpecialization(specializationId));
-
-        model.addAttribute("specialization",
-                specializationService.findById(specializationId)
-                        .orElseThrow(() -> new IllegalArgumentException("Doctor not found")));
-
-        return "main/doctors";
-    }
+//    @GetMapping("/doctors")
+//    public String doctors(@RequestParam Integer specializationId, Model model) {
+//        model.addAttribute("doctors",
+//                doctorService.findAllBySpecialization(specializationId));
+//
+//        model.addAttribute("specialization",
+//                specializationService.findById(specializationId)
+//                        .orElseThrow(() -> new IllegalArgumentException("Doctor not found")));
+//
+//        return "main/doctors";
+//    }
 
     // TODO: Не пускать на страницу с префиксом /doctor никого кроме врачей
     @GetMapping("/doctor/appointments")

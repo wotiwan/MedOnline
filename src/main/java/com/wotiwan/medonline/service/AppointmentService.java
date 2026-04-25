@@ -4,9 +4,13 @@ import com.wotiwan.medonline.database.entity.Appointment;
 import com.wotiwan.medonline.database.entity.AppointmentStatus;
 import com.wotiwan.medonline.database.entity.TimeSlot;
 import com.wotiwan.medonline.database.repository.AppointmentRepository;
+import com.wotiwan.medonline.dto.AppointmentReadDto;
+import com.wotiwan.medonline.mapper.AppointmentMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -15,10 +19,19 @@ import java.util.Optional;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
+    private final AppointmentMapper appointmentMapper;
 
-    // TODO: Возвращать DTO
-    public Optional<Appointment> findById(Integer id) {
-        return appointmentRepository.findById(id);
+    //TODO: Переделать exception'ы, сервис не должен знать про http. Добавить кастомный
+    public AppointmentReadDto findById(Integer id, Integer userId) {
+        // Проверяем, что эта запись принадлежит текущему пользователю (запрет просмотра чужих записей)
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (appointment.getPatient().getId().equals(userId)) {
+            return appointmentMapper.map(appointment);
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 
     @Transactional

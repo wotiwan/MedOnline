@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.time.LocalDate;
 
-@Controller
+//@Controller
 @RequestMapping("/appointments")
 @RequiredArgsConstructor
 public class AppointmentController {
@@ -27,24 +27,24 @@ public class AppointmentController {
     private final TimeSlotService timeSlotService;
     private final AppointmentService appointmentService;
 
-    @GetMapping("/{id}")
-    public String appointmentDetails(@PathVariable Integer id,
-                                     Model model,
-                                     Principal principal) {
-
-
-        Appointment appointment = appointmentService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
-
-        // защита (чтобы нельзя было смотреть чужие записи)
-        if (!appointment.getPatient().getEmail().equals(principal.getName())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-
-        model.addAttribute("appointment", appointment);
-
-        return "appointments/details";
-    }
+//    @GetMapping("/{id}")
+//    public String appointmentDetails(@PathVariable Integer id,
+//                                     Model model,
+//                                     Principal principal) {
+//
+//
+//        Appointment appointment = appointmentService.findById(id)
+//                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+//
+//        // защита (чтобы нельзя было смотреть чужие записи)
+//        if (!appointment.getPatient().getEmail().equals(principal.getName())) {
+//            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+//        }
+//
+//        model.addAttribute("appointment", appointment);
+//
+//        return "appointments/details";
+//    }
 
     @PostMapping("/cancel")
     public String cancel(@RequestParam Integer appointmentId,

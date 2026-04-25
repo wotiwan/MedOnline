@@ -4,6 +4,8 @@ import com.wotiwan.medonline.database.entity.*;
 import com.wotiwan.medonline.database.repository.AppointmentRepository;
 import com.wotiwan.medonline.database.repository.TimeSlotRepository;
 import com.wotiwan.medonline.database.repository.UserRepository;
+import com.wotiwan.medonline.dto.TimeSlotReadDto;
+import com.wotiwan.medonline.mapper.TimeSlotMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +21,13 @@ public class TimeSlotService {
     private final TimeSlotRepository timeSlotRepository;
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
+    private final TimeSlotMapper timeSlotMapper;
 
-    public List<TimeSlot> findAllByDoctorAndDate(Integer doctorId, LocalDate date) {
-        return timeSlotRepository.findAllByDoctorIdAndDate(doctorId, date);
+    public List<TimeSlotReadDto> findAllByDoctorAndDate(Integer doctorId, LocalDate date) {
+        return timeSlotRepository.findAllByDoctorIdAndDate(doctorId, date)
+                .stream()
+                .map(timeSlotMapper::map)
+                .toList();
     }
 
     public void book(Integer slotId, String userEmail) {

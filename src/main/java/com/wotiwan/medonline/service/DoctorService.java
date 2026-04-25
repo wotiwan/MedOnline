@@ -64,6 +64,10 @@ public class DoctorService {
                 .map(doctorMapper::map);
     }
 
+    public boolean existsById(Integer id) {
+        return doctorRepository.existsById(id);
+    }
+
     public List<DoctorReadDto> findAllBySpecialization(Integer specializationId) {
         return doctorRepository.findAllBySpecializationId(specializationId).stream()
                 .map(doctorMapper::map)
