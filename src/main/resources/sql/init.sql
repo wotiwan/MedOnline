@@ -16,8 +16,7 @@ create table specialization (
 );
 
 CREATE TABLE doctors (
-     id SERIAL PRIMARY KEY,
-     user_id INT UNIQUE NOT NULL,
+     user_id INT PRIMARY KEY,
      specialization_id int references specialization(id),
      description TEXT,
 
@@ -34,7 +33,7 @@ CREATE TABLE doctor_schedule_templates (
        slot_duration INT NOT NULL, -- в минутах (15, 30 и т.д.)
 
        CONSTRAINT fk_template_doctor
-           FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE,
+           FOREIGN KEY (doctor_id) REFERENCES doctors(user_id) ON DELETE CASCADE,
        UNIQUE (doctor_id, day_of_week)
 );
 
@@ -46,7 +45,7 @@ CREATE TABLE schedules (
        end_time TIME NOT NULL,
 
        CONSTRAINT fk_schedule_doctor
-           FOREIGN KEY (doctor_id) REFERENCES doctors(id) ON DELETE CASCADE
+           FOREIGN KEY (doctor_id) REFERENCES doctors(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE time_slots (
@@ -74,7 +73,7 @@ CREATE TABLE appointments (
           FOREIGN KEY (patient_id) REFERENCES users(id),
 
       CONSTRAINT fk_appointment_doctor
-          FOREIGN KEY (doctor_id) REFERENCES doctors(id),
+          FOREIGN KEY (doctor_id) REFERENCES doctors(user_id),
 
       CONSTRAINT fk_appointment_slot
           FOREIGN KEY (time_slot_id) REFERENCES time_slots(id)

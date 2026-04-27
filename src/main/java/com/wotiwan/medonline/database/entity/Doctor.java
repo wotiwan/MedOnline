@@ -13,11 +13,12 @@ import lombok.*;
 public class Doctor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Integer id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @MapsId
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
