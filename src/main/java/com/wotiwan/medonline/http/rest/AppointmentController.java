@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -29,12 +30,14 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<Void> cancelAppointment(
+    public ResponseEntity<Map<String, String>> cancelAppointment(
             @PathVariable Integer id,
             @AuthenticationPrincipal SecurityUser securityUser
     ) {
         appointmentService.cancel(id, securityUser.getUsername());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(
+                Map.of("message", "Запись успешно отменена!")
+        );
     }
 
 }

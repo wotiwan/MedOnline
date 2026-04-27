@@ -38,17 +38,18 @@ public class UserRestController {
     @PutMapping("/users/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public UserReadDto update(@PathVariable("id") Integer id,
-                              @Validated @RequestBody UserEditDto user) { // Зач реквест боди?
+                              @Validated @RequestBody UserEditDto user) {
         return userService.update(id, user)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-//    @DeleteMapping("/{id}")
-//    public void delete(@PathVariable("id") Long id) {
-//        if (!userService.delete(id)) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @DeleteMapping("/users/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void delete(@PathVariable("id") Integer id) {
+        if (!userService.delete(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
 
 
 
