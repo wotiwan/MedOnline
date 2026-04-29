@@ -1,0 +1,113 @@
+/* -------------------- Базовые настройки -------------------- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #eef2f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.main-container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* -------------------- Контейнер логина -------------------- */
+.login-container {
+    background-color: #ffffff;
+    padding: 48px 36px;
+    border-radius: 16px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+    width: 360px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* -------------------- Заголовок -------------------- */
+h2 {
+    text-align: center;
+    color: #1f2937;
+    margin-bottom: 32px;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+/* -------------------- Поля формы -------------------- */
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+label {
+    color: #4b5563;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1f2937;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15,118,110,0.15);
+}
+
+/* -------------------- Кнопка входа -------------------- */
+button {
+    width: 100%;
+    padding: 14px;
+    background-color: #0f766e;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.25s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+}
+
+button:hover {
+    background-color: #0d5f59;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(15, 118, 110, 0.3);
+}
+
+/* -------------------- Ошибка -------------------- */
+.error {
+    color: #dc2626;
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* -------------------- Ссылка на регистрацию -------------------- */
+.register-link {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+    color: #0f766e;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.25s;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+    color: #0d5f59;
+}
