@@ -27,7 +27,9 @@ public class AppointmentService {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (appointment.getPatient().getId().equals(userId)) {
+        // Доступ к записи есть у врача или пациента
+        if (appointment.getPatient().getId().equals(userId)
+                || appointment.getDoctor().getId().equals(userId)) {
             return appointmentMapper.map(appointment);
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -51,5 +53,4 @@ public class AppointmentService {
         // TODO: Повторно записаться на этот слот не получится, переделать
         slot.setBooked(false); // time_slot_id INT UNIQUE NOT NULL
     }
-
 }

@@ -5,10 +5,8 @@ import com.wotiwan.medonline.database.repository.AppointmentRepository;
 import com.wotiwan.medonline.database.repository.DoctorRepository;
 import com.wotiwan.medonline.database.repository.SpecializationRepository;
 import com.wotiwan.medonline.database.repository.UserRepository;
-import com.wotiwan.medonline.dto.AppointmentDoctorUpdateDto;
-import com.wotiwan.medonline.dto.DoctorCreateDto;
-import com.wotiwan.medonline.dto.DoctorReadDto;
-import com.wotiwan.medonline.dto.UserDoctorCreateDto;
+import com.wotiwan.medonline.dto.*;
+import com.wotiwan.medonline.mapper.AppointmentMapper;
 import com.wotiwan.medonline.mapper.DoctorCreateMapper;
 import com.wotiwan.medonline.mapper.DoctorMapper;
 import com.wotiwan.medonline.mapper.UserCreateMapper;
@@ -31,6 +29,7 @@ public class DoctorService {
     private final UserCreateMapper userCreateMapper;
     private final DoctorMapper doctorMapper;
     private final AppointmentRepository appointmentRepository;
+    private final AppointmentMapper appointmentMapper;
 
     // Создание доктора из юзера
     public void create(DoctorCreateDto dto) {
@@ -74,12 +73,15 @@ public class DoctorService {
                 .toList();
     }
 
-    public List<Appointment> getTodayAppointments(Integer doctorId) {
-        return appointmentRepository.findTodayAppointments(doctorId);
+    public List<AppointmentReadDto> getTodayAppointments(Integer doctorId) {
+        return appointmentRepository.findTodayAppointments(doctorId)
+                .stream()
+                .map(appointmentMapper::map)
+                .toList();
     }
 
-    public void updateAppointment(AppointmentDoctorUpdateDto dto) {
-        Appointment appointment = appointmentRepository.findById(dto.id())
+    public void updateAppointment(Integer appointmentId, AppointmentDoctorUpdateDto dto) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Запись не найдена"));
 
         appointment.setStatus(dto.status());

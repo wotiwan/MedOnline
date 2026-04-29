@@ -50,21 +50,21 @@ public class DoctorController {
         return "doctor/appointments";
     }
 
-    // TODO: Запретить врачу смотреть чужие записи
-    @GetMapping("/doctor/appointments/{id}")
-    public String appointmentDetails(@PathVariable Integer id, Model model) {
-        model.addAttribute("appointmentId", id);
-        model.addAttribute("updateDto", new AppointmentDoctorUpdateDto(null, null, null));
-        return "doctor/appointment-details";
-    }
+//    // TODO: Запретить врачу смотреть чужие записи
+//    @GetMapping("/doctor/appointments/{id}")
+//    public String appointmentDetails(@PathVariable Integer id, Model model) {
+//        model.addAttribute("appointmentId", id);
+//        model.addAttribute("updateDto", new AppointmentDoctorUpdateDto(null, null, null));
+//        return "doctor/appointment-details";
+//    }
 
-    // TODO: Запретить врачу менять чужие записи
-    @PostMapping("doctor/appointments/{id}")
-    public String update(@PathVariable Integer id,
-                         @ModelAttribute AppointmentDoctorUpdateDto dto) {
-
-        doctorService.updateAppointment(dto);
-        return "redirect:/doctor/appointments";
-    }
+//    // TODO: Запретить врачу менять чужие записи
+//    @PostMapping("doctor/appointments/{id}")
+//    public String update(@PathVariable Integer id,
+//                         @ModelAttribute AppointmentDoctorUpdateDto dto) {
+//
+//        doctorService.updateAppointment(dto);
+//        return "redirect:/doctor/appointments";
+//    }
 
 }
