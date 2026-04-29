@@ -1,0 +1,144 @@
+/* -------------------- Карточка формы -------------------- */
+.form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 36px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+    margin-bottom: 30px;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 18px; /* пространство между полями */
+}
+
+.form-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+}
+
+/* Заголовок страницы */
+.page-header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.page-header h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* -------------------- Таблица расписания -------------------- */
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+    font-size: 14px;
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    color: #0f172a;
+}
+
+.schedule-table th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #334155;
+}
+
+.schedule-table tr:hover {
+    background: #f1f5f9;
+    transition: background 0.25s;
+}
+
+/* -------------------- Форма генерации -------------------- */
+.generate-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.generate-form label {
+    font-weight: 500;
+    color: #475569;
+}
+
+.generate-form input[type="number"] {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+    width: 100px;
+    transition: border 0.25s, box-shadow 0.25s;
+}
+
+.generate-form input[type="number"]:focus {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+}
+
+/* -------------------- Кнопки -------------------- */
+.btn {
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.btn.primary {
+    background: #0f766e; /* современный темно-зеленый */
+    color: white;
+    box-shadow: 0 3px 10px rgba(15, 118, 110, 0.25);
+}
+
+.btn.primary:hover {
+    background: #0d5f59;
+    transform: translateY(-1px);
+}
+
+.btn.danger {
+    background: #dc2626;
+    color: white;
+    box-shadow: 0 3px 10px rgba(220, 38, 38, 0.25);
+}
+
+.btn.danger:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+}
+
+/* -------------------- Alerts -------------------- */
+.alert.error {
+    background: rgba(220, 38, 38, 0.08);
+    border: 1px solid rgba(220, 38, 38, 0.25);
+    color: #b91c1c;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+.alert.success {
+    background: rgba(5, 150, 105, 0.08);
+    border: 1px solid rgba(5, 150, 105, 0.25);
+    color: #065f46;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+/* -------------------- Дополнительное выравнивание -------------------- */
+.form-card .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
