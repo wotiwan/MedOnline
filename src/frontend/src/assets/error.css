@@ -1,0 +1,48 @@
+/* =========================
+   ERRORS
+   ========================= */
+/* центрирование */
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+}
+
+/* карточка */
+.error-card {
+  background: white;
+  padding: 40px 50px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* код ошибки */
+.error-code {
+  font-size: 72px;
+  font-weight: 700;
+  color: #0f766e;
+  margin-bottom: 10px;
+}
+
+/* текст */
+h1 {
+  margin-bottom: 10px;
+}
+
+p {
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+/* кнопки */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
