@@ -1,0 +1,69 @@
+.appointment-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 20px;
+
+    border: 1px solid #eef2f7;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+
+    transition: 0.2s ease;
+}
+
+.appointment-card:hover {
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.appointment-card p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #475569;
+}
+
+/* =========================
+   СТАТУСЫ (более "дорогие")
+   ========================= */
+.status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* booked */
+.status.booked {
+    background: rgba(15, 118, 110, 0.1);
+    color: #0f766e;
+}
+
+/* cancelled */
+.status.cancelled {
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+}
+
+/* completed */
+.status.completed {
+    background: rgba(22, 163, 74, 0.1);
+    color: #16a34a;
+}
+
+/* =========================
+   КНОПКА (через систему)
+   ========================= */
+.btn.cancel-btn {
+    margin-top: 16px;
+}
+
+/* если используешь общий класс danger */
+.btn.danger {
+    background: #dc2626;
+    color: white;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+}
+
+.btn.danger:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+}
