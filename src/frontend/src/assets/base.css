@@ -1,0 +1,154 @@
+/* reset + body */
+
+body {
+    font-family: Inter, 'Segoe UI', sans-serif;
+    background: #f6f8fb;
+    margin: 0;
+    color: #1e293b;
+}
+
+/* контейнер */
+.container {
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+/* заголовки */
+h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+p {
+    color: #64748b;
+}
+
+/* =========================
+   КНОПКИ (новый стиль)
+   ========================= */
+.btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+
+    background: #0f766e; /* основной цвет */
+    color: white;
+
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25);
+}
+
+.btn:hover {
+    background: #0d5f59;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.35);
+}
+
+/* secondary */
+.btn.secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+    box-shadow: none;
+}
+
+.btn.secondary:hover {
+    background: #cbd5e1;
+}
+
+/* danger */
+.btn.danger {
+    background: #dc2626;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+}
+
+.btn.danger:hover {
+    background: #b91c1c;
+}
+
+/* =========================
+   HEADER (ключевой апгрейд)
+   ========================= */
+.app-header {
+    background: #0f172a; /* глубокий тёмный */
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 14px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* logo */
+.logo a {
+    font-weight: 600;
+    font-size: 18px;
+    color: #f8fafc;
+}
+
+/* nav */
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-link {
+    color: #94a3b8;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.nav-link:hover {
+    color: #2dd4bf; /* акцент */
+}
+
+/* actions */
+.nav-actions {
+    display: flex;
+    align-items: center;
+}
+
+/* logout */
+.logout-btn {
+    background: none;
+    border: none;
+    color: #f87171;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.logout-btn:hover {
+    color: #ef4444;
+}
+
+/* =========================
+   ССЫЛКИ
+   ========================= */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* =========================
+   UTILS
+   ========================= */
+* {
+    box-sizing: border-box;
+}
