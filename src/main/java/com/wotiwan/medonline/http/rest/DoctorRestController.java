@@ -42,8 +42,7 @@ public class DoctorRestController {
     // Возвращает инфу об этом докторе
     @GetMapping("/doctors/{doctorId}")
     public DoctorReadDto getDoctor(@PathVariable Integer doctorId) {
-        return doctorService.findById(doctorId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Врач не найден!"));
+        return doctorService.findById(doctorId);
     }
 
     // Возвращает информацию о доступных слотах записи запрашиваемого врача

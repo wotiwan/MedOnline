@@ -1,0 +1,28 @@
+package com.wotiwan.medonline.dto;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+@AllArgsConstructor
+@JsonPropertyOrder({ "message", "data", "errorTime" }) // чтобы не
+public class ResponseMessage<T>
+{
+    private String message; // Человеко читаемое сообщение об ошибке
+    private T data; // Подробная информация
+    private LocalDateTime errorTime;
+
+    public ResponseMessage(String message) {
+        this.message = message;
+        this.errorTime = LocalDateTime.now();
+    }
+    public ResponseMessage(String message, T data) {
+        this.message = message;
+        this.data = data;
+        this.errorTime = LocalDateTime.now();
+    }
+
+}

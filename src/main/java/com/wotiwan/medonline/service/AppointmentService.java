@@ -6,6 +6,7 @@ import com.wotiwan.medonline.database.entity.TimeSlot;
 import com.wotiwan.medonline.database.repository.AppointmentRepository;
 import com.wotiwan.medonline.dto.AppointmentReadDto;
 import com.wotiwan.medonline.mapper.AppointmentMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class AppointmentService {
     public AppointmentReadDto findById(Integer id, Integer userId) {
         // Проверяем, что эта запись принадлежит текущему пользователю (запрет просмотра чужих записей)
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException("Запись не найдена!"));
 
         // Доступ к записи есть у врача или пациента
         if (appointment.getPatient().getId().equals(userId)

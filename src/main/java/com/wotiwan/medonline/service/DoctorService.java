@@ -10,6 +10,7 @@ import com.wotiwan.medonline.mapper.AppointmentMapper;
 import com.wotiwan.medonline.mapper.DoctorCreateMapper;
 import com.wotiwan.medonline.mapper.DoctorMapper;
 import com.wotiwan.medonline.mapper.UserCreateMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -53,9 +54,10 @@ public class DoctorService {
         doctorRepository.save(doctor);
     }
 
-    public Optional<DoctorReadDto> findById(Integer id) {
+    public DoctorReadDto findById(Integer id) {
         return doctorRepository.findById(id)
-                .map(doctorMapper::map);
+                .map(doctorMapper::map)
+                .orElseThrow(() -> new EntityNotFoundException("Врач не найден!"));
     }
 
     public Optional<DoctorReadDto> findByUserId(Integer id) {
