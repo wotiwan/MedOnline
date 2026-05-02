@@ -1,6 +1,7 @@
 package com.wotiwan.medonline.http.rest;
 
 import com.wotiwan.medonline.database.entity.User;
+import com.wotiwan.medonline.dto.ResponseMessage;
 import com.wotiwan.medonline.dto.UserCreateDto;
 import com.wotiwan.medonline.dto.auth.AuthRequest;
 import com.wotiwan.medonline.dto.auth.AuthResponse;
@@ -48,12 +49,12 @@ public class AuthController {
         }
     }
 
-    // TODO: подумать над тем какой ответ лучше отдавать
     @PostMapping("/register")
-    public String register(@Valid @RequestBody UserCreateDto userCreateDto) {
+    public ResponseEntity<ResponseMessage<?>> register(@Valid @RequestBody UserCreateDto userCreateDto) {
         // TODO: обработку ошибок добавить
         userService.create(userCreateDto);
-        return "Регистрация успешна";
+        return ResponseEntity
+                .ok(new ResponseMessage<>("Пользователь успешно зарегистрирован!"));
     }
 
     // Метод для удобного получения юзера

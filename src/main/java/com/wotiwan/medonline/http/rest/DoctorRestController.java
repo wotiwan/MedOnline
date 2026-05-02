@@ -29,6 +29,7 @@ public class DoctorRestController {
     private final TimeSlotService timeSlotService;
     private final AppointmentService appointmentService;
 
+    // TODO: Зачем такой запрос? Разбить на два: отдельно doctors, отдельно specialization
     @GetMapping("/specialization/{specializationId}/doctors")
     public DoctorsBySpecializationResponse doctors(@PathVariable Integer specializationId) {
 
@@ -50,19 +51,6 @@ public class DoctorRestController {
     public DoctorsSlotsResponse getDoctorSlots(@PathVariable Integer doctorId,
                                              @RequestParam(required = false)
                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-
-        // Проверка, существует ли врач с таким id
-        if (!doctorService.existsById(doctorId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        // Проверка корректности запрашиваемой даты. Не отдаём то, что было в прошлом
-        if (date == null) {
-            date = LocalDate.now();
-        }
-        if (date.isBefore(LocalDate.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Дата не может быть в прошлом");
-        }
 
         List<TimeSlotReadDto> timeSlots = timeSlotService.findAllByDoctorAndDate(doctorId, date);
 
@@ -88,13 +76,12 @@ public class DoctorRestController {
 
     @PreAuthorize("hasRole('ROLE_DOCTOR')")
     @PutMapping("/doctor/appointments/{appointmentId}")
-    public ResponseEntity<Map<String, String>> updateDoctorAppointment(
+    public ResponseEntity<ResponseMessage<?>> updateDoctorAppointment(
             @PathVariable Integer appointmentId,
-            @RequestBody AppointmentDoctorUpdateDto appointment,
-            @AuthenticationPrincipal SecurityUser securityUser
+            @RequestBody AppointmentDoctorUpdateDto appointment
     ) {
         doctorService.updateAppointment(appointmentId, appointment);
-        return ResponseEntity.ok().body(Map.of("message", "Запись обновлена!"));
+        return ResponseEntity.ok().body(new ResponseMessage<>("Запись обновлена!"));
     }
 
 }

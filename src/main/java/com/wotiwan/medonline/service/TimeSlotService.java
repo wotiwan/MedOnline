@@ -7,8 +7,10 @@ import com.wotiwan.medonline.database.repository.UserRepository;
 import com.wotiwan.medonline.dto.TimeSlotReadDto;
 import com.wotiwan.medonline.mapper.TimeSlotMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,8 +24,21 @@ public class TimeSlotService {
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
     private final TimeSlotMapper timeSlotMapper;
+    private final DoctorService doctorService;
 
     public List<TimeSlotReadDto> findAllByDoctorAndDate(Integer doctorId, LocalDate date) {
+
+        // Проверка, существует ли врач с таким id
+        doctorService.checkDoctorExists(doctorId);
+
+        // Проверка корректности запрашиваемой даты. Не отдаём то, что было в прошлом
+        if (date == null) {
+            date = LocalDate.now();
+        }
+        if (date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Дата не может быть в прошлом");
+        }
+
         return timeSlotRepository.findAllByDoctorIdAndDate(doctorId, date)
                 .stream()
                 .map(timeSlotMapper::map)

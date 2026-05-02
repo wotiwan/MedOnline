@@ -32,6 +32,7 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ResponseMessage<String>> handleEntityNotFoundException(
             EntityNotFoundException e
@@ -49,6 +50,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
+
 
     @ExceptionHandler(exception = {
             IllegalArgumentException.class,

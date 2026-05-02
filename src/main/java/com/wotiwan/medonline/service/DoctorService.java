@@ -69,6 +69,12 @@ public class DoctorService {
         return doctorRepository.existsById(id);
     }
 
+    public void checkDoctorExists(Integer id) {
+        if (!doctorRepository.existsById(id)) {
+            throw new EntityNotFoundException("Doctor with id=%d not found".formatted(id));
+        }
+    }
+
     public List<DoctorReadDto> findAllBySpecialization(Integer specializationId) {
         return doctorRepository.findAllBySpecializationId(specializationId).stream()
                 .map(doctorMapper::map)

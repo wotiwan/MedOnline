@@ -13,6 +13,7 @@ import com.wotiwan.medonline.mapper.AppointmentMapper;
 import com.wotiwan.medonline.mapper.UserCreateMapper;
 import com.wotiwan.medonline.mapper.UserEditMapper;
 import com.wotiwan.medonline.mapper.UserReadMapper;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -42,9 +43,10 @@ public class UserService implements UserDetailsService {
     private final AppointmentRepository appointmentRepository;
     private final AppointmentMapper appointmentMapper;
 
-    public Optional<UserReadDto> findById(Integer id) {
+    public UserReadDto findById(Integer id) {
         return userRepository.findById(id)
-                .map(userReadMapper::map);
+                .map(userReadMapper::map)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с id=%d не найден!".formatted(id)));
     }
 
     @Transactional // Над ними переопределяем аннотацию, без ридонли флага, чтобы работало
@@ -59,11 +61,12 @@ public class UserService implements UserDetailsService {
     // Находим юзера по id, затем меняем поля, переданные в UserEditDto, после чего сохраняем
     // Далее мапим обновлённого юзера в дто для отправки на фронт
     @Transactional
-    public Optional<UserReadDto> update(Integer id, UserEditDto userDto) {
+    public UserReadDto update(Integer id, UserEditDto userDto) {
         return userRepository.findById(id)
                 .map(e -> userEditMapper.map(userDto, e))
                 .map(userRepository::saveAndFlush)
-                .map(userReadMapper::map);
+                .map(userReadMapper::map)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с id=%d не найден!".formatted(id)));
     }
 
     // В Principal хранится только email текущего пользователя, по-этому искать можем так
@@ -102,15 +105,13 @@ public class UserService implements UserDetailsService {
     public boolean updateRole(Integer id, Role role) {
         return userRepository.updateRole(id, role) > 0;
     }
+
     @Transactional
-    public boolean delete(Integer id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    userRepository.delete(user);
-                    userRepository.flush();
-                    return true;
-                })
-                .orElse(false);
+    public void delete(Integer id) {
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException("Пользователь с id=%d не найден!".formatted(id));
+        }
+        userRepository.deleteById(id);
     }
 
     // TODO: Добавить пагинацию

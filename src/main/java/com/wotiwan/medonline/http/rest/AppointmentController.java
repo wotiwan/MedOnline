@@ -1,6 +1,7 @@
 package com.wotiwan.medonline.http.rest;
 
 import com.wotiwan.medonline.dto.AppointmentReadDto;
+import com.wotiwan.medonline.dto.ResponseMessage;
 import com.wotiwan.medonline.security.user.SecurityUser;
 import com.wotiwan.medonline.service.AppointmentService;
 import com.wotiwan.medonline.service.DoctorService;
@@ -35,24 +36,24 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<Map<String, String>> cancelAppointment(
+    public ResponseEntity<ResponseMessage<?>> cancelAppointment(
             @PathVariable Integer id,
             @AuthenticationPrincipal SecurityUser securityUser
     ) {
         appointmentService.cancel(id, securityUser.getUsername());
         return ResponseEntity.ok(
-                Map.of("message", "Запись успешно отменена!")
+                new ResponseMessage<>("Запись успешно отменена!")
         );
     }
 
     @PostMapping("/book")
-    public ResponseEntity<Map<String, String>> bookAppointment(
+    public ResponseEntity<ResponseMessage<?>> bookAppointment(
         @RequestParam Integer slotId,
         @AuthenticationPrincipal SecurityUser securityUser
     ) {
         timeSlotService.book(slotId, securityUser.getUsername());
         return ResponseEntity.ok(
-                Map.of("message", "Запись успешно создана!")
+                new ResponseMessage<>("Запись успешно создана!")
         );
     }
 

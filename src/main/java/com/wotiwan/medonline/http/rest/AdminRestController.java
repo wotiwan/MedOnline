@@ -46,17 +46,17 @@ public class AdminRestController {
     }
 
     @PutMapping("/users/{id}/role/{role}")
-    public ResponseEntity<Map<String, String>> updateUserRole(@PathVariable Integer id,
+    public ResponseEntity<ResponseMessage<?>> updateUserRole(@PathVariable Integer id,
                                                @PathVariable Role role) {
 
         userService.updateRole(id, role);
         return ResponseEntity.ok(
-                Map.of("message", "Роль успешно обновлена")
+                new ResponseMessage<>("Роль успешно обновлена!")
         );
     }
 
     @PostMapping("/doctors/create")
-    public ResponseEntity<Map<String, String>> createDoctorFromUser(
+    public ResponseEntity<ResponseMessage<?>> createDoctorFromUser(
             @Validated @RequestBody DoctorCreateDto doctorCreateDto) {
 
         try {
@@ -66,18 +66,18 @@ public class AdminRestController {
         }
 
         return ResponseEntity.ok(
-                Map.of("message", "Врач успешно зарегистрирован!")
+                new ResponseMessage<>("Врач успешно зарегистрирован!")
         );
     }
 
     @PostMapping("/doctors/full/create")
-    public ResponseEntity<Map<String, String>> createDoctor(
+    public ResponseEntity<ResponseMessage<?>> createDoctor(
             @Validated @RequestBody UserDoctorCreateDto userDoctorCreateDto) {
 
         userDoctorService.create(userDoctorCreateDto);
 
         return ResponseEntity.ok(
-                Map.of("message", "Врач успешно зарегистрирован!")
+                new ResponseMessage<>("Врач успешно зарегистрирован!")
         );
     }
 

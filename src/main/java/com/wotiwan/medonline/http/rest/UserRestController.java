@@ -24,14 +24,13 @@ public class UserRestController {
     @GetMapping("/users/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public UserReadDto findById(@PathVariable("id") Integer id) {
-        return userService.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userService.findById(id);
     }
 
     @PostMapping(path = "/users", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserReadDto create(@Validated @RequestBody UserCreateDto user) { // Зач реквест боди?
+    public UserReadDto create(@Validated @RequestBody UserCreateDto user) {
         return userService.create(user);
     }
 
@@ -39,19 +38,14 @@ public class UserRestController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public UserReadDto update(@PathVariable("id") Integer id,
                               @Validated @RequestBody UserEditDto user) {
-        return userService.update(id, user)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return userService.update(id, user);
     }
 
     @DeleteMapping("/users/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void delete(@PathVariable("id") Integer id) {
-        if (!userService.delete(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+        userService.delete(id);
     }
-
-
 
     @GetMapping("/profile")
     public ProfileResponse profilePage(@AuthenticationPrincipal SecurityUser securityUser) {
@@ -69,8 +63,7 @@ public class UserRestController {
     public ProfileResponse profilePageEdit(@AuthenticationPrincipal SecurityUser securityUser,
                                            @Validated @RequestBody UserEditDto userEdit) {
 
-        userService.update(securityUser.getUser().getId(), userEdit)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        userService.update(securityUser.getUser().getId(), userEdit);
 
         return profilePage(securityUser);
     }
