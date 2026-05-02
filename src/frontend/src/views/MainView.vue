@@ -7,7 +7,7 @@ import '@/assets/base.css'
 const specializations = ref([])
 
 onMounted(async () => {
-  const res = await http.get('/api/main')
+  const res = await http.get('/api/specializations')
   specializations.value = res.data
 })
 </script>
