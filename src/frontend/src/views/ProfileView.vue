@@ -38,7 +38,7 @@ function cancelEdit() {
 }
 
 async function save() {
-  await http.post('/api/profile', form.value)
+  await http.put('/api/profile', form.value)
 
   user.value = { ...user.value, ...form.value }
   isEditing.value = false
