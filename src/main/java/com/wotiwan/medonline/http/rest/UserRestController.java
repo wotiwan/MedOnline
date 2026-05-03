@@ -50,8 +50,7 @@ public class UserRestController {
     @GetMapping("/profile")
     public ProfileResponse profilePage(@AuthenticationPrincipal SecurityUser securityUser) {
 
-        UserReadDto user = userService.findByEmail(securityUser.getUsername())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        UserReadDto user = userService.findByEmail(securityUser.getUsername());
 
         List<AppointmentReadDto> appointments =
                 userService.findAllUserAppointmentsByUserId(securityUser.getUser().getId());

@@ -70,9 +70,10 @@ public class UserService implements UserDetailsService {
     }
 
     // В Principal хранится только email текущего пользователя, по-этому искать можем так
-    public Optional<UserReadDto> findByEmail(String email) {
+    public UserReadDto findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .map(userReadMapper::map);
+                .map(userReadMapper::map)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден!"));
     }
 
     // Нужно Spring Security для логина
@@ -87,10 +88,6 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Failed to retrieve user: " + username));
     }
 
-
-    // TODO: Добавить функционал администратора -- смена ролей + удаление пользователей
-    // Потребуется UserEditDto + методы updateRole(), delete()
-
     public List<UserReadDto> findAll() {
         return userRepository.findAll().stream()
                 .map(userReadMapper::map)
@@ -103,6 +100,9 @@ public class UserService implements UserDetailsService {
     }
     @Transactional
     public boolean updateRole(Integer id, Role role) {
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException("Пользователь с id=%d не найден!".formatted(id));
+        }
         return userRepository.updateRole(id, role) > 0;
     }
 
@@ -118,7 +118,7 @@ public class UserService implements UserDetailsService {
     // Загрузка всех записей к врачу одного пользователя
     public List<Appointment> findAllUserAppointmentsByUserEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow();
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден!"));
 
         return appointmentRepository
                 .findAllByPatientIdOrderByTimeSlot_StartTimeDesc(user.getId());

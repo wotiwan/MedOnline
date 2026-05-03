@@ -6,6 +6,8 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+// TODO: Разделить сообщение об ошибке и сообщения со статус-кодом 200 на два класса
+
 @Data
 @AllArgsConstructor
 @JsonPropertyOrder({ "message", "data", "errorTime" }) // Для корректного порядка записи при сериализации в json

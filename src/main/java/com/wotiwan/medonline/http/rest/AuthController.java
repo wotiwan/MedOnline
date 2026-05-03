@@ -21,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @AllArgsConstructor
@@ -45,7 +47,7 @@ public class AuthController {
 
             return new ResponseEntity<>(new AuthResponse("Вы успешно вошли в систему", jwt), HttpStatus.OK);
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>("Неверные учетные данные", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Map.of("message", "Неверные учетные данные"), HttpStatus.UNAUTHORIZED);
         }
     }
 

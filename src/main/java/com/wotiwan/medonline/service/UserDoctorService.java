@@ -9,6 +9,7 @@ import com.wotiwan.medonline.database.repository.UserRepository;
 import com.wotiwan.medonline.dto.UserDoctorCreateDto;
 import com.wotiwan.medonline.mapper.DoctorCreateMapper;
 import com.wotiwan.medonline.mapper.UserCreateMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,8 @@ public class UserDoctorService {
         userRepository.save(user);
         // Создание доктора
         var specialization = specializationRepository.findById(dto.getSpecializationId())
-                        .orElseThrow(() -> new IllegalArgumentException("Specialization not found"));
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                "Специализация с id=%d не найдена!".formatted(dto.getSpecializationId())));
         Doctor doctor = doctorCreateMapper.map(dto);
         doctor.setSpecialization(specialization);
         doctorRepository.save(doctor);

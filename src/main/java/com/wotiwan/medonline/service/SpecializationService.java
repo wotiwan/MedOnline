@@ -4,6 +4,7 @@ import com.wotiwan.medonline.database.entity.Specialization;
 import com.wotiwan.medonline.database.repository.SpecializationRepository;
 import com.wotiwan.medonline.dto.SpecializationReadDto;
 import com.wotiwan.medonline.mapper.SpecializationReadMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ public class SpecializationService {
     public SpecializationReadDto findById(Integer specializationId) {
         return specializationRepository.findById(specializationId)
                 .map(specializationReadMapper::map)
-                .orElseThrow();
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Специализация с id=%d не найдена!".formatted(specializationId)));
     }
 }

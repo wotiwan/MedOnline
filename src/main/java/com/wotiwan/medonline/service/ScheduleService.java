@@ -43,10 +43,11 @@ public class ScheduleService {
     public void createScheduleTemplate(ScheduleTemplateCreateDto dto) {
 
         Doctor doctor = doctorRepository.findById(dto.doctorId())
-                .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Врач с id=%d не найден!".formatted(dto.doctorId())));
 
         if (scheduleTemplateRepository.existsByDoctorAndDayOfWeek(doctor, dto.dayOfWeek())) {
-            throw new IllegalStateException("Шаблон для этого дня уже существует");
+            throw new IllegalStateException("Шаблон для этого дня (%s) уже существует".formatted(dto.dayOfWeek()));
         }
 
         // Валидация (перенести мб?)
@@ -54,7 +55,8 @@ public class ScheduleService {
             throw new IllegalArgumentException("Время начала позже времени окончания");
         }
         if (dto.slotDuration() <= 0) {
-            throw new IllegalArgumentException("Некорректная длительность слота");
+            throw new IllegalArgumentException(
+                    "Некорректная длительность слота. slotDuration=%d".formatted(dto.slotDuration()));
         }
 
         ScheduleTemplate template = scheduleTemplateCreateMapper.map(doctor, dto);

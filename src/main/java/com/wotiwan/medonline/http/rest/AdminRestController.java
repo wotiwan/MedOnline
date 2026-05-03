@@ -59,11 +59,7 @@ public class AdminRestController {
     public ResponseEntity<ResponseMessage<?>> createDoctorFromUser(
             @Validated @RequestBody DoctorCreateDto doctorCreateDto) {
 
-        try {
-            doctorService.create(doctorCreateDto);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        doctorService.create(doctorCreateDto);
 
         return ResponseEntity.ok(
                 new ResponseMessage<>("Врач успешно зарегистрирован!")

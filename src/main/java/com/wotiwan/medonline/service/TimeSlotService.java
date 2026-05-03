@@ -6,6 +6,7 @@ import com.wotiwan.medonline.database.repository.TimeSlotRepository;
 import com.wotiwan.medonline.database.repository.UserRepository;
 import com.wotiwan.medonline.dto.TimeSlotReadDto;
 import com.wotiwan.medonline.mapper.TimeSlotMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class TimeSlotService {
             date = LocalDate.now();
         }
         if (date.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Дата не может быть в прошлом");
+            throw new IllegalArgumentException("Дата не может быть в прошлом! date=%s".formatted(date));
         }
 
         return timeSlotRepository.findAllByDoctorIdAndDate(doctorId, date)
@@ -48,14 +49,14 @@ public class TimeSlotService {
     public void book(Integer slotId, String userEmail) {
 
         TimeSlot slot = timeSlotRepository.findById(slotId)
-                .orElseThrow(() -> new IllegalArgumentException("Slot not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Слот с id=%d не найден!".formatted(slotId)));
 
         if (slot.isBooked()) {
             throw new IllegalStateException("Слот уже занят");
         }
 
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден!"));
 
         Doctor doctor = slot.getSchedule().getDoctor();
 

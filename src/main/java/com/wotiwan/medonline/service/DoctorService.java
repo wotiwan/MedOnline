@@ -36,7 +36,8 @@ public class DoctorService {
     public void create(DoctorCreateDto dto) {
 
         User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("User with id=%d not found".formatted(dto.getUserId())));
 
         // Защита от повторного создания врача
         if (doctorRepository.existsByUserId(user.getId())) {
@@ -49,7 +50,8 @@ public class DoctorService {
         // Создаём Doctor
         Doctor doctor = doctorCreateMapper.map(dto);
         var specialization = specializationRepository.findById(dto.getSpecializationId())
-                .orElseThrow(() -> new IllegalArgumentException("Specialization not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Specialization with id=%d not found".formatted(dto.getSpecializationId())));
         doctor.setSpecialization(specialization);
         doctorRepository.save(doctor);
     }
@@ -57,9 +59,10 @@ public class DoctorService {
     public DoctorReadDto findById(Integer id) {
         return doctorRepository.findById(id)
                 .map(doctorMapper::map)
-                .orElseThrow(() -> new EntityNotFoundException("Врач не найден!"));
+                .orElseThrow(() -> new EntityNotFoundException("Doctor with id=%d not found".formatted(id)));
     }
 
+    @Deprecated
     public Optional<DoctorReadDto> findByUserId(Integer id) {
         return doctorRepository.findByUserId(id)
                 .map(doctorMapper::map);
@@ -90,7 +93,8 @@ public class DoctorService {
 
     public void updateAppointment(Integer appointmentId, AppointmentDoctorUpdateDto dto) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new IllegalArgumentException("Запись не найдена"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("appointment with id=%d not found".formatted(appointmentId)));
 
         appointment.setStatus(dto.status());
         appointment.setConsultationResult(dto.consultationResult());
