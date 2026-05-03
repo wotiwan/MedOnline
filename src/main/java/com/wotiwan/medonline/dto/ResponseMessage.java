@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-@JsonPropertyOrder({ "message", "data", "errorTime" }) // чтобы не
+@JsonPropertyOrder({ "message", "data", "errorTime" }) // Для корректного порядка записи при сериализации в json
 public class ResponseMessage<T>
 {
     private String message; // Человеко читаемое сообщение об ошибке
