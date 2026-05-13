@@ -22,6 +22,7 @@ function goToAppointment(doctorId) {
   router.push(`/appointments/create?doctorId=${doctorId}`)
 }
 </script>
+
 <template>
   <AppHeader />
 
@@ -29,17 +30,18 @@ function goToAppointment(doctorId) {
 
     <div class="page-header">
       <h1>Врачи</h1>
+
       <p v-if="specialization">
         {{ specialization.name }}
       </p>
     </div>
 
-    <!-- empty -->
+    <!-- empty state -->
     <div v-if="!doctors.length" class="empty-state">
       <p>Нет доступных врачей</p>
     </div>
 
-    <!-- grid -->
+    <!-- doctors grid -->
     <div v-else class="doctors-grid">
 
       <div
@@ -49,13 +51,21 @@ function goToAppointment(doctorId) {
       >
 
         <div class="doctor-info">
-          <h3>
-            {{ d.lastName }} {{ d.firstName }} {{ d.middleName }}
-          </h3>
+
+          <div class="doctor-header">
+            <h3 class="doctor-name">
+              {{ d.lastName }} {{ d.firstName }} {{ d.middleName }}
+            </h3>
+
+            <span class="price-badge">
+              {{ d.consultationPrice ?? '—' }} ₽
+            </span>
+          </div>
 
           <p class="doctor-desc">
-            {{ d.description }}
+            {{ d.description || 'Описание отсутствует' }}
           </p>
+
         </div>
 
         <div class="doctor-actions">
@@ -73,4 +83,5 @@ function goToAppointment(doctorId) {
 
   </div>
 </template>
+
 <style scoped src="@/assets/doctors.css"></style>

@@ -8,19 +8,30 @@ const route = useRoute()
 
 const doctorId = route.query.doctorId
 
-const doctor = ref(null) // 👈 ДОБАВИЛИ
+const doctor = ref(null)
+
 const date = ref(new Date().toISOString().split('T')[0])
 const slots = ref([])
+
 const selectedSlot = ref(null)
+
 const showModal = ref(false)
 
-// 👇 загрузка врача
+// 👇 новое состояние
+const appointmentId = ref(null)
+const loading = ref(false)
+
+// ======================
+// загрузка врача
+// ======================
 async function loadDoctor() {
   const res = await http.get(`/api/doctors/${doctorId}`)
   doctor.value = res.data
 }
 
+// ======================
 // загрузка слотов
+// ======================
 async function loadSlots() {
   const res = await http.get(`/api/doctors/${doctorId}/slots`, {
     params: { date: date.value }
@@ -28,37 +39,75 @@ async function loadSlots() {
   slots.value = res.data.timeSlots
 }
 
+// ======================
 // смена даты
+// ======================
 function changeDate(offset) {
   const d = new Date(date.value)
   d.setDate(d.getDate() + offset)
   date.value = d.toISOString().split('T')[0]
 }
 
-// открытие модалки
+// ======================
+// открыть модалку
+// ======================
 function openModal(slot) {
   selectedSlot.value = slot
   showModal.value = true
 }
 
-// закрытие
+// ======================
+// закрыть модалку
+// ======================
 function closeModal() {
   showModal.value = false
+  selectedSlot.value = null
+  appointmentId.value = null
 }
 
-// запись
+// ======================
+// создание записи
+// ======================
 async function book() {
-  await http.post('/api/appointments/book', null, {
-    params: {
-      slotId: selectedSlot.value.id
-    }
-  })
+  loading.value = true
 
-  showModal.value = false
-  loadSlots()
+  try {
+    const res = await http.post('/api/appointments/book', null, {
+      params: {
+        slotId: selectedSlot.value.id
+      }
+    })
+
+    appointmentId.value = res.data
+  } finally {
+    loading.value = false
+  }
 }
 
-// 👇 грузим ПАРАЛЛЕЛЬНО
+// ======================
+// оплата
+// ======================
+async function pay() {
+  const returnUrl = window.location.origin + `/appointments/${appointmentId.value}`
+
+  const res = await http.post(
+    `/api/payments/${appointmentId.value}`,
+    null,
+    {
+      params: {
+        returnUrl
+      }
+    }
+  )
+
+  const url = res.data
+
+  window.location.href = url
+}
+
+// ======================
+// lifecycle
+// ======================
 onMounted(async () => {
   await Promise.all([
     loadDoctor(),
@@ -68,14 +117,15 @@ onMounted(async () => {
 
 watch(date, loadSlots)
 
+// ======================
 // формат времени
+// ======================
 function formatTime(dateTime) {
   return new Date(dateTime).toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit'
   })
 }
-
 </script>
 
 <template>
@@ -83,20 +133,20 @@ function formatTime(dateTime) {
 
   <div class="container">
 
-    <!-- заголовок -->
+    <!-- HEADER -->
     <div class="page-header">
-        <h1>Запись к врачу</h1>
+      <h1>Запись к врачу</h1>
 
-        <p v-if="doctor">
-            {{ doctor.lastName }} {{ doctor.firstName }} {{ doctor.middleName }}
-        </p>
+      <p v-if="doctor">
+        {{ doctor.lastName }} {{ doctor.firstName }} {{ doctor.middleName }}
+      </p>
 
-        <p v-else>
-            Загрузка врача...
-        </p>
+      <p v-else>
+        Загрузка врача...
+      </p>
     </div>
 
-    <!-- контролы -->
+    <!-- DATE CONTROL -->
     <div class="booking-controls">
 
       <input
@@ -113,7 +163,7 @@ function formatTime(dateTime) {
 
     </div>
 
-    <!-- слоты -->
+    <!-- SLOTS -->
     <div class="slots-grid">
 
       <div v-if="!slots.length" class="empty-state">
@@ -122,17 +172,14 @@ function formatTime(dateTime) {
 
       <template v-for="slot in slots" :key="slot.id">
 
-        <!-- свободный -->
         <button
           v-if="!slot.isBooked"
           class="slot free"
-          :class="{ selected: selectedSlot?.id === slot.id }"
           @click="openModal(slot)"
         >
           {{ formatTime(slot.startTime) }} — {{ formatTime(slot.endTime) }}
         </button>
 
-        <!-- занятый -->
         <div v-else class="slot booked">
           {{ formatTime(slot.startTime) }} — {{ formatTime(slot.endTime) }}
         </div>
@@ -143,7 +190,7 @@ function formatTime(dateTime) {
 
   </div>
 
-  <!-- МОДАЛКА -->
+  <!-- MODAL -->
   <div
     v-if="showModal"
     class="modal"
@@ -151,29 +198,60 @@ function formatTime(dateTime) {
   >
     <div class="modal-content">
 
-      <h3>Подтверждение записи</h3>
-      
-        <p v-if="doctor">
-            <strong>Врач:</strong>
-            {{ doctor.lastName }} {{ doctor.firstName }}
-        </p>
-      
-      <p>
-        <strong>Время:</strong>
-        {{ formatTime(selectedSlot.startTime) }} -
-        {{ formatTime(selectedSlot.endTime) }}
-      </p>
+      <h3>Запись к врачу</h3>
 
-      <button class="btn" @click="book">
-        Подтвердить
-      </button>
+      <!-- STEP 1: booking -->
+      <template v-if="!appointmentId">
+
+        <p v-if="doctor">
+          <strong>Врач:</strong>
+          {{ doctor.lastName }} {{ doctor.firstName }}
+        </p>
+
+        <p>
+          <strong>Время:</strong>
+          {{ formatTime(selectedSlot.startTime) }} -
+          {{ formatTime(selectedSlot.endTime) }}
+        </p>
+        
+        <p v-if="doctor">
+          <strong>Стоимость записи:</strong>
+            {{ doctor.consultationPrice ? doctor.consultationPrice + ' руб.' : 'бесплатно' }}
+        </p>
+        
+        <button
+          class="btn"
+          :disabled="loading"
+          @click="book"
+        >
+          {{ loading ? 'Создание...' : 'Подтвердить запись' }}
+        </button>
+
+      </template>
+
+      <!-- STEP 2: payment -->
+      <template v-else>
+
+        <p class="success-text">
+          Запись успешно создана
+        </p>
+
+        <button
+          class="btn primary"
+          @click="pay"
+        >
+          Оплатить приём
+        </button>
+
+      </template>
 
       <button class="btn secondary" @click="closeModal">
-        Отмена
+        Закрыть
       </button>
 
     </div>
   </div>
 
 </template>
+
 <style scoped src="@/assets/DoctorSlots.css"></style>

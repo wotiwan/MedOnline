@@ -18,11 +18,9 @@ public class PaymentController {
 
     // Создание оплаты
     @PostMapping("/{appointmentId}")
-    public String createPayment(@PathVariable Integer appointmentId) {
-
-        String confirmationURL = paymentService.createPayment(appointmentId);
-
-        return "redirect:" + confirmationURL;
+    public String createPayment(@PathVariable Integer appointmentId,
+                                @RequestParam String returnUrl) {
+        return paymentService.createPayment(appointmentId, returnUrl);
     }
 
     @PostMapping("/notification")

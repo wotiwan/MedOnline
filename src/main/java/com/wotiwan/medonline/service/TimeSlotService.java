@@ -46,7 +46,7 @@ public class TimeSlotService {
                 .toList();
     }
 
-    public void book(Integer slotId, String userEmail) {
+    public Integer book(Integer slotId, String userEmail) {
 
         TimeSlot slot = timeSlotRepository.findById(slotId)
                 .orElseThrow(() -> new EntityNotFoundException("Слот с id=%d не найден!".formatted(slotId)));
@@ -71,5 +71,7 @@ public class TimeSlotService {
                 .build();
 
         appointmentRepository.save(appointment);
+
+        return appointment.getId();
     }
 }

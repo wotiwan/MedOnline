@@ -56,3 +56,41 @@
 .btn.primary {
     width: 100%;
 }
+
+/* ===== HEADER В КАРТОЧКЕ (ФИО + цена) ===== */
+.doctor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* ФИО */
+.doctor-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.3;
+    color: #1e293b;
+}
+
+/* ===== ЦЕНА (бейдж) ===== */
+.price-badge {
+    background: rgba(45, 212, 191, 0.15);
+    color: #0f766e;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+/* ===== ОПИСАНИЕ ===== */
+.doctor-desc {
+    font-size: 14px;
+    /* color: #031d11; */
+    line-height: 1.4;
+    margin-top: 6px;
+}
+

@@ -1,5 +1,7 @@
 package com.wotiwan.medonline.dto;
 
+import java.math.BigDecimal;
+
 public record DoctorReadDto (
     Integer id,
     Integer userId,
@@ -7,6 +9,7 @@ public record DoctorReadDto (
     String middleName,
     String lastName,
     Integer specializationId,
+    BigDecimal consultationPrice,
     String description
 ){
 }

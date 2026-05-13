@@ -58,6 +58,7 @@ input {
 
 /* статус */
 .status {
+  margin-right: 5px;
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
@@ -76,4 +77,30 @@ input {
 .status.completed {
   background: rgba(22,163,74,0.1);
   color: #16a34a;
+}
+
+.payment-status {
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+}
+
+.payment-status.paid {
+    background: rgba(15, 118, 110, 0.12);
+    color: #0f766e;
+}
+
+.payment-status.unpaid {
+    background: rgba(220, 38, 38, 0.10);
+    color: #dc2626;
+}
+
+.status.free {
+    background: rgba(100, 116, 139, 0.12);
+    color: #475569;
+}
+
+.appointment-info > p:first-child {
+  margin-top: 0;
 }

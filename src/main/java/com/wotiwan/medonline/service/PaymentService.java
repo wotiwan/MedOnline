@@ -40,7 +40,7 @@ public class PaymentService {
     private String secretKey;
 
     @Transactional
-    public String createPayment(Integer appointmentId) {
+    public String createPayment(Integer appointmentId, String returnUrl) {
 
         // Проверяем, есть ли уже существующие попытки оплаты
         List<Payment> payments = paymentRepository.findAllByAppointmentId(appointmentId);
@@ -83,7 +83,7 @@ public class PaymentService {
                 ),
                 new PaymentRequest.Confirmation(
                         "redirect",
-                        "http://localhost:8080/main"
+                        returnUrl
                 ),
                 true,
                 "Оплата консультации"

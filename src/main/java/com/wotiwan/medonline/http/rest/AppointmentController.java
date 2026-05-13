@@ -47,14 +47,11 @@ public class AppointmentController {
     }
 
     @PostMapping("/book")
-    public ResponseEntity<ResponseMessage<?>> bookAppointment(
+    public Integer bookAppointment(
         @RequestParam Integer slotId,
         @AuthenticationPrincipal SecurityUser securityUser
     ) {
-        timeSlotService.book(slotId, securityUser.getUsername());
-        return ResponseEntity.ok(
-                new ResponseMessage<>("Запись успешно создана!")
-        );
+        return timeSlotService.book(slotId, securityUser.getUsername());
     }
 
 }

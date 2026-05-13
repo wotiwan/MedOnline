@@ -15,8 +15,16 @@ const form = ref({
   birthDate: ''
 })
 
+// ======================
+// загрузка профиля
+// ======================
+
+const specializationsMap = ref({})
+
 onMounted(async () => {
   const res = await http.get('/api/profile')
+
+  console.log(res.data)
 
   user.value = res.data.user
   appointments.value = res.data.appointments
@@ -27,8 +35,45 @@ onMounted(async () => {
     lastName: user.value.lastName,
     birthDate: user.value.birthDate
   }
+
+  // ======================
+  // specialization ids
+  // ======================
+
+  const specializationIds = [
+    ...new Set(
+      appointments.value.map(
+        a => a.doctor.specializationId
+      )
+    )
+  ]
+
+  // ======================
+  // загрузка specialization
+  // ======================
+
+  const responses = await Promise.all(
+    specializationIds.map(id =>
+      http.get(`/api/specializations/${id}`)
+    )
+  )
+
+  // ======================
+  // map
+  // ======================
+
+  specializationsMap.value = responses.reduce(
+    (acc, res) => {
+      acc[res.data.id] = res.data.name
+      return acc
+    },
+    {}
+  )
 })
 
+// ======================
+// редактирование профиля
+// ======================
 function openEdit() {
   isEditing.value = true
 }
@@ -43,6 +88,10 @@ async function save() {
   user.value = { ...user.value, ...form.value }
   isEditing.value = false
 }
+
+// ======================
+// формат даты/времени
+// ======================
 function formatDate(dateTime) {
   const date = new Date(dateTime)
 
@@ -61,7 +110,49 @@ function formatTime(dateTime) {
     minute: '2-digit'
   })
 }
+
+// ======================
+// Платёжная логика
+// ======================
+function getPaymentStatus(appointment) {
+  const payments = appointment.payments || []
+
+  // бесплатно
+  if (!appointment.price || appointment.price === 0) {
+    return 'БЕСПЛАТНО'
+  }
+
+  // оплачено (хотя бы один success)
+  const hasSucceeded = payments.some(
+    p => p.status === 'SUCCEEDED'
+  )
+
+  if (hasSucceeded) {
+    return 'ОПЛАЧЕНО'
+  }
+
+  return 'НЕ ОПЛАЧЕНО'
+}
+
+function getPaymentClass(appointment) {
+  const payments = appointment.payments || []
+
+  if (!appointment.price || appointment.price === 0) {
+    return 'free'
+  }
+
+  const hasSucceeded = payments.some(
+    p => p.status === 'SUCCEEDED'
+  )
+
+  if (hasSucceeded) {
+    return 'booked'
+  }
+
+  return 'cancelled'
+}
 </script>
+
 <template>
   <AppHeader />
 
@@ -134,52 +225,59 @@ function formatTime(dateTime) {
         У вас пока нет записей
       </div>
 
-<div v-else class="appointments-grid">
+      <div v-else class="appointments-grid">
 
-    <div
-        v-for="a in appointments"
-        :key="a.id"
-        class="appointment-card"
-        @click="$router.push(`/appointments/${a.id}`)"
-    >
+        <div
+          v-for="a in appointments"
+          :key="a.id"
+          class="appointment-card"
+          @click="$router.push(`/appointments/${a.id}`)"
+        >
 
-        <div class="appointment-info">
+          <div class="appointment-info">
 
-        <p>
-            <strong>Врач:</strong>
-            {{ a.doctor.lastName + " " + a.doctor.firstName + " " + a.doctor.middleName }}
-        </p>
+            <p>
+              <strong>Врач:</strong>
+              {{ a.doctor.lastName + " " + a.doctor.firstName + " " + a.doctor.middleName }}
+            </p>
 
-        <p>
-            <strong>Специализация:</strong>
-            {{ a.doctor.specializationId }}
-        </p>
+            <p>
+              <strong>Специализация:</strong>
+              {{ specializationsMap[a.doctor.specializationId] }}
+            </p>
 
-        <p>
-            <strong>Дата:</strong>
-            {{ formatDate(a.timeSlot.startTime) }}
-        </p>
+            <p>
+              <strong>Дата:</strong>
+              {{ formatDate(a.timeSlot.startTime) }}
+            </p>
 
-        <p>
-            <strong>Время:</strong>
-            {{ formatTime(a.timeSlot.startTime) }} -
-            {{ formatTime(a.timeSlot.endTime) }}
-        </p>
+            <p>
+              <strong>Время:</strong>
+              {{ formatTime(a.timeSlot.startTime) }} -
+              {{ formatTime(a.timeSlot.endTime) }}
+            </p>
+
+          </div>
+
+          <div class="appointment-status">
+            <span class="status" :class="a.status.toLowerCase()">
+              {{ a.status }}
+            </span>
+            <span
+                class="status"
+                :class="getPaymentClass(a)"
+              >
+                {{ getPaymentStatus(a) }}
+              </span>
+          </div>
 
         </div>
 
-        <div class="appointment-status">
-        <span class="status" :class="a.status.toLowerCase()">
-            {{ a.status }}
-        </span>
-        </div>
-
-    </div>
-
-    </div>
+      </div>
 
     </div>
 
   </div>
 </template>
+
 <style scoped src="@/assets/profile.css"></style>

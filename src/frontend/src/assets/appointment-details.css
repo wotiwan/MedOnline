@@ -1,69 +1,181 @@
+.page-header {
+    margin-bottom: 28px;
+}
+
+/* карточка */
 .appointment-card {
     background: white;
-    border-radius: 16px;
-    padding: 24px;
-    margin-top: 20px;
+    border-radius: 20px;
+    padding: 28px;
 
-    border: 1px solid #eef2f7;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    border: 1px solid #e2e8f0;
 
-    transition: 0.2s ease;
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.04),
+        0 1px 2px rgba(15, 23, 42, 0.04);
+
+    transition: 0.25s ease;
 }
 
 .appointment-card:hover {
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    box-shadow:
+        0 10px 30px rgba(15, 23, 42, 0.08),
+        0 2px 6px rgba(15, 23, 42, 0.06);
 }
 
-.appointment-card p {
-    margin: 8px 0;
+/* верх */
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    margin-bottom: 28px;
+}
+
+.doctor-name {
+    margin: 0;
+    font-size: 24px;
+    color: #0f172a;
+}
+
+.specialization {
+    margin-top: 6px;
+    color: #64748b;
     font-size: 14px;
-    color: #475569;
 }
 
-/* =========================
-   СТАТУСЫ (более "дорогие")
-   ========================= */
+/* grid */
+.appointment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+
+    margin-bottom: 28px;
+}
+
+/* info block */
+.info-block {
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.label {
+    display: block;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+/* consultation */
+.consultation-block {
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 18px;
+
+    margin-bottom: 24px;
+}
+
+.consultation-text {
+    margin-top: 8px;
+    color: #334155;
+    line-height: 1.5;
+}
+
+/* actions */
+.actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* статусы записи */
 .status {
-    display: inline-block;
-    padding: 4px 10px;
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 12px;
     border-radius: 999px;
-    font-size: 12px;
-    font-weight: 500;
+
+    font-size: 13px;
+    font-weight: 600;
 }
 
 /* booked */
 .status.booked {
-    background: rgba(15, 118, 110, 0.1);
+    background: rgba(15, 118, 110, 0.12);
     color: #0f766e;
 }
 
 /* cancelled */
 .status.cancelled {
-    background: rgba(220, 38, 38, 0.1);
+    background: rgba(220, 38, 38, 0.12);
     color: #dc2626;
 }
 
 /* completed */
 .status.completed {
-    background: rgba(22, 163, 74, 0.1);
+    background: rgba(22, 163, 74, 0.12);
     color: #16a34a;
 }
 
+/* payment block */
+.payment-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 80px;
+
+    transition: 0.2s ease;
+}
+
+/* title */
+.payment-title {
+    font-size: 13px;
+    opacity: 0.8;
+    margin-bottom: 10px;
+}
+
+/* value */
+.payment-value {
+    font-size: 18px;
+    font-weight: 700;
+}
+
 /* =========================
-   КНОПКА (через систему)
+   PAID
    ========================= */
-.btn.cancel-btn {
-    margin-top: 16px;
+.payment-block.paid {
+    background: rgba(15, 118, 110, 0.12);
+    border: 1px solid rgba(15, 118, 110, 0.18);
+
+    color: #0f766e;
 }
 
-/* если используешь общий класс danger */
-.btn.danger {
-    background: #dc2626;
-    color: white;
-    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+/* =========================
+   UNPAID
+   ========================= */
+.payment-block.unpaid {
+    background: rgba(220, 38, 38, 0.10);
+    border: 1px solid rgba(220, 38, 38, 0.16);
+
+    color: #dc2626;
 }
 
-.btn.danger:hover {
-    background: #b91c1c;
-    transform: translateY(-1px);
+/* =========================
+   FREE
+   ========================= */
+.payment-block.free {
+    background: rgba(100, 116, 139, 0.10);
+    border: 1px solid rgba(100, 116, 139, 0.14);
+
+    color: #475569;
 }
