@@ -91,6 +91,7 @@ public class DoctorService {
                 .toList();
     }
 
+    // TODO: Давать менять записи только после начала времени записи
     public void updateAppointment(Integer appointmentId, AppointmentDoctorUpdateDto dto) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() ->

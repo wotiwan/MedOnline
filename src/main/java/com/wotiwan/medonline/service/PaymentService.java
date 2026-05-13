@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wotiwan.medonline.database.entity.Appointment;
+import com.wotiwan.medonline.database.entity.AppointmentStatus;
 import com.wotiwan.medonline.database.entity.Payment;
 import com.wotiwan.medonline.database.entity.PaymentStatus;
 import com.wotiwan.medonline.database.repository.AppointmentRepository;
@@ -11,6 +12,9 @@ import com.wotiwan.medonline.database.repository.PaymentRepository;
 import com.wotiwan.medonline.dto.AppointmentReadDto;
 import com.wotiwan.medonline.dto.payment.PaymentRequest;
 import com.wotiwan.medonline.dto.payment.PaymentResponse;
+import com.wotiwan.medonline.dto.payment.RefundRequest;
+import com.wotiwan.medonline.dto.payment.RefundResponse;
+import com.wotiwan.medonline.security.user.SecurityUser;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +25,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -28,7 +33,6 @@ import java.util.UUID;
 public class PaymentService {
 
     private final WebClient webClient;
-    private final AppointmentService appointmentService;
     private final AppointmentRepository appointmentRepository;
     private final PaymentRepository paymentRepository;
     private final ObjectMapper objectMapper;
@@ -74,6 +78,11 @@ public class PaymentService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Appointment with id=%d not found!".formatted(appointmentId)));
 
+        // Проверяем статус консультации, если отменена - то и оплату совершить не дадим
+        if (appointment.getStatus().equals(AppointmentStatus.CANCELLED)) {
+            throw new IllegalStateException("Appointment cancelled!");
+        }
+
         BigDecimal paymentPrice = appointment.getPrice();
 
         var request = new PaymentRequest(
@@ -115,7 +124,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public void UpdatePaymentStatus(String requestBody) throws JsonProcessingException {
+    public void updatePaymentStatus(String requestBody) throws JsonProcessingException {
 
         // Парсим json ответ от yookassa
         JsonNode json = objectMapper.readTree(requestBody);
@@ -132,6 +141,54 @@ public class PaymentService {
                 .orElseThrow(() -> new EntityNotFoundException("Payment with id=%s not found!".formatted(paymentId)));
 
         payment.setStatus(PaymentStatus.valueOf(status.toUpperCase()));
+    }
+
+    public void refundPayment(Integer paymentId) {
+
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new EntityNotFoundException("Payment with id=%s not found!".formatted(paymentId)));
+
+        var request = new RefundRequest(
+                new RefundRequest.Amount(payment.getAmount(), "RUB"),
+                payment.getExternalPaymentId()
+        );
+
+        RefundResponse response = webClient.post()
+                .uri("https://api.yookassa.ru/v3/refunds")
+                .headers(headers -> {
+                    headers.setBasicAuth(shopId, secretKey);
+                    headers.set("Idempotence-Key", UUID.randomUUID().toString());
+                })
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(RefundResponse.class)
+                .block();
+
+        if (!Objects.equals(response.status(), "succeeded")) {
+            throw new IllegalStateException("Не удалось совершить возврат средств!");
+        }
+
+        payment.setStatus(PaymentStatus.REFUNDED);
+
+    }
+
+    // Бесполезно для нас, не отменяет PENDING платежи
+    public void cancelPayment(Integer paymentId) {
+
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new EntityNotFoundException("Payment with id=%s not found!".formatted(paymentId)));
+
+        webClient.post()
+                .uri("https://api.yookassa.ru/v3/payments/%s/cancel".formatted(payment.getExternalPaymentId()))
+                .headers(headers -> {
+                    headers.setBasicAuth(shopId, secretKey);
+                    headers.set("Idempotence-Key", UUID.randomUUID().toString());
+                    headers.set("Content-Type", "application/json");
+                })
+                .bodyValue("{}")
+                .retrieve()
+                .toBodilessEntity()
+                .block();
     }
 
 }

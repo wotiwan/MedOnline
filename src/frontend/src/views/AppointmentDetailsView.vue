@@ -223,7 +223,7 @@ async function pay() {
 
         <!-- оплатить -->
         <button
-          v-if="paymentStatus === 'Не оплачено'"
+          v-if="appointment.status === 'BOOKED' && paymentStatus === 'Не оплачено'"
           class="btn"
           @click="pay"
         >

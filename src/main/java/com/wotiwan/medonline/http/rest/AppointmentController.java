@@ -35,12 +35,12 @@ public class AppointmentController {
 
     }
 
-    @PutMapping("/{id}/cancel")
+    @PutMapping("/{appointmentId}/cancel")
     public ResponseEntity<ResponseMessage<?>> cancelAppointment(
-            @PathVariable Integer id,
+            @PathVariable Integer appointmentId,
             @AuthenticationPrincipal SecurityUser securityUser
     ) {
-        appointmentService.cancel(id, securityUser.getUsername());
+        appointmentService.cancel(appointmentId, securityUser.getUsername());
         return ResponseEntity.ok(
                 new ResponseMessage<>("Запись успешно отменена!")
         );
