@@ -15,6 +15,7 @@ public class AppointmentMapper implements Mapper<Appointment, AppointmentReadDto
     private final UserReadMapper userReadMapper;
     private final DoctorMapper doctorMapper;
     private final TimeSlotMapper timeSlotMapper;
+    private final PaymentMapper paymentMapper;
 
     @Override
     public AppointmentReadDto map(Appointment object) {
@@ -25,7 +26,9 @@ public class AppointmentMapper implements Mapper<Appointment, AppointmentReadDto
                 timeSlotMapper.map(object.getTimeSlot()),
                 object.getStatus(),
                 object.getConsultationResult(),
-                object.getCreatedAt()
+                object.getCreatedAt(),
+                object.getPrice(),
+                object.getPayments().stream().map(paymentMapper::map).toList()
         );
     }
 }

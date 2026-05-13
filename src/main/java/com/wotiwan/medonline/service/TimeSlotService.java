@@ -67,6 +67,7 @@ public class TimeSlotService {
                 .doctor(doctor)
                 .timeSlot(slot)
                 .status(AppointmentStatus.BOOKED)
+                .price(doctor.getConsultationPrice())
                 .build();
 
         appointmentRepository.save(appointment);

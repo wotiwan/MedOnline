@@ -27,3 +27,7 @@ spring:
 jwt:
   secret: 8cf7d3e8e6c45d8df94fbba76a1f4302b79d1483d5cf6f11b8f2e92d7e6e56cd
   expiration: 86400
+
+yookassa:
+  shop-id: 1356576
+  secret-key: test__g2COs_PDofZYggKHv4_2pikibxOKmh5OLzHTnsBoFE

@@ -3,6 +3,8 @@ package com.wotiwan.medonline.database.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,5 +29,7 @@ public class Doctor {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    private BigDecimal consultationPrice;
 
 }

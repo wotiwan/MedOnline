@@ -3,7 +3,9 @@ package com.wotiwan.medonline.database.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @ToString
 @Data
@@ -37,6 +39,11 @@ public class Appointment {
     private String consultationResult;
 
     private LocalDateTime createdAt;
+
+    private BigDecimal price;
+
+    @OneToMany(mappedBy = "appointment")
+    private List<Payment> payments;
 
     @PrePersist
     public void prePersist() {

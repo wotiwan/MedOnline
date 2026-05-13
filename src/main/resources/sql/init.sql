@@ -15,10 +15,13 @@ create table specialization (
     name varchar(255) not null unique
 );
 
+
+
 CREATE TABLE doctors (
      user_id INT PRIMARY KEY,
      specialization_id int references specialization(id),
      description TEXT,
+     consultation_price NUMERIC(10,2),
 
      CONSTRAINT fk_doctor_user
          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -68,6 +71,7 @@ CREATE TABLE appointments (
       status VARCHAR(50) DEFAULT 'BOOKED',
       consultation_result TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      price NUMERIC(10,2) NOT NULL,
 
       CONSTRAINT fk_appointment_patient
           FOREIGN KEY (patient_id) REFERENCES users(id),
@@ -77,4 +81,23 @@ CREATE TABLE appointments (
 
       CONSTRAINT fk_appointment_slot
           FOREIGN KEY (time_slot_id) REFERENCES time_slots(id)
+);
+
+CREATE TABLE payments (
+                          id SERIAL PRIMARY KEY,
+
+                          appointment_id INT NOT NULL,
+
+                          external_payment_id VARCHAR(255),
+
+                          amount NUMERIC(10,2) NOT NULL,
+
+                          status VARCHAR(50) NOT NULL,
+
+                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                          CONSTRAINT fk_payment_appointment
+                              FOREIGN KEY (appointment_id)
+                                  REFERENCES appointments(id)
+                                  ON DELETE CASCADE
 );

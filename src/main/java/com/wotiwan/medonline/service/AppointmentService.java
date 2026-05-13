@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
@@ -31,6 +32,12 @@ public class AppointmentService {
         } else {
             throw new AccessDeniedException("Недостаточно прав доступа!");
         }
+    }
+
+    public AppointmentReadDto findById(Integer id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Запись c id=%d не найдена!".formatted(id)));
+        return appointmentMapper.map(appointment);
     }
 
     @Transactional
