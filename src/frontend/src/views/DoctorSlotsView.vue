@@ -17,7 +17,6 @@ const selectedSlot = ref(null)
 
 const showModal = ref(false)
 
-// 👇 новое состояние
 const appointmentId = ref(null)
 const loading = ref(false)
 
@@ -36,6 +35,7 @@ async function loadSlots() {
   const res = await http.get(`/api/doctors/${doctorId}/slots`, {
     params: { date: date.value }
   })
+
   slots.value = res.data.timeSlots
 }
 
@@ -44,7 +44,24 @@ async function loadSlots() {
 // ======================
 function changeDate(offset) {
   const d = new Date(date.value)
+
   d.setDate(d.getDate() + offset)
+
+  date.value = d.toISOString().split('T')[0]
+}
+
+// ======================
+// quick dates
+// ======================
+function setToday() {
+  date.value = new Date().toISOString().split('T')[0]
+}
+
+function setTomorrow() {
+  const d = new Date()
+
+  d.setDate(d.getDate() + 1)
+
   date.value = d.toISOString().split('T')[0]
 }
 
@@ -61,6 +78,7 @@ function openModal(slot) {
 // ======================
 function closeModal() {
   showModal.value = false
+
   selectedSlot.value = null
   appointmentId.value = null
 }
@@ -79,6 +97,11 @@ async function book() {
     })
 
     appointmentId.value = res.data
+
+    selectedSlot.value.isBooked = true
+
+    await loadSlots()
+
   } finally {
     loading.value = false
   }
@@ -88,7 +111,8 @@ async function book() {
 // оплата
 // ======================
 async function pay() {
-  const returnUrl = window.location.origin + `/appointments/${appointmentId.value}`
+  const returnUrl =
+    window.location.origin + `/appointments/${appointmentId.value}`
 
   const res = await http.post(
     `/api/payments/${appointmentId.value}`,
@@ -126,6 +150,13 @@ function formatTime(dateTime) {
     minute: '2-digit'
   })
 }
+
+// ======================
+// прошедший слот
+// ======================
+function isPastSlot(slot) {
+  return new Date(slot.startTime) <= new Date()
+}
 </script>
 
 <template>
@@ -133,32 +164,83 @@ function formatTime(dateTime) {
 
   <div class="container">
 
-    <!-- HEADER -->
-    <div class="page-header">
-      <h1>Запись к врачу</h1>
+    <!-- HERO -->
+    <div v-if="doctor" class="doctor-hero">
 
-      <p v-if="doctor">
-        {{ doctor.lastName }} {{ doctor.firstName }} {{ doctor.middleName }}
-      </p>
+      <div class="doctor-avatar">
+        👨‍⚕️
+      </div>
 
-      <p v-else>
-        Загрузка врача...
-      </p>
+      <div class="doctor-meta">
+
+        <h1>
+          {{ doctor.lastName }}
+          {{ doctor.firstName }}
+          {{ doctor.middleName }}
+        </h1>
+
+        <p class="doctor-price">
+          Стоимость приёма:
+          <strong>
+            {{
+              doctor.consultationPrice
+                ? doctor.consultationPrice + ' ₽'
+                : 'Бесплатно'
+            }}
+          </strong>
+        </p>
+
+        <p
+          v-if="doctor.description"
+          class="doctor-description"
+        >
+          {{ doctor.description }}
+        </p>
+
+      </div>
+
     </div>
 
-    <!-- DATE CONTROL -->
+    <!-- SKELETON -->
+    <div v-else class="doctor-skeleton"></div>
+
+    <!-- CONTROLS -->
     <div class="booking-controls">
 
-      <input
-        type="date"
-        v-model="date"
-        class="date-input"
-      />
+      <div>
+
+        <input
+          type="date"
+          v-model="date"
+          class="date-input"
+        />
+
+        <div class="quick-dates">
+
+          <button class="quick-btn" @click="setToday">
+            Сегодня
+          </button>
+
+          <button class="quick-btn" @click="setTomorrow">
+            Завтра
+          </button>
+
+        </div>
+
+      </div>
 
       <div class="date-nav">
-        <button @click="changeDate(-1)">←</button>
+
+        <button class="quick-btn" @click="changeDate(-1)">
+          ←
+        </button>
+
         <span>{{ date }}</span>
-        <button @click="changeDate(1)">→</button>
+
+        <button class="quick-btn" @click="changeDate(1)">
+          →
+        </button>
+
       </div>
 
     </div>
@@ -172,16 +254,35 @@ function formatTime(dateTime) {
 
       <template v-for="slot in slots" :key="slot.id">
 
+        <!-- свободный -->
         <button
-          v-if="!slot.isBooked"
+          v-if="!slot.isBooked && !isPastSlot(slot)"
           class="slot free"
           @click="openModal(slot)"
         >
-          {{ formatTime(slot.startTime) }} — {{ formatTime(slot.endTime) }}
+          {{ formatTime(slot.startTime) }}
+          —
+          {{ formatTime(slot.endTime) }}
         </button>
 
-        <div v-else class="slot booked">
-          {{ formatTime(slot.startTime) }} — {{ formatTime(slot.endTime) }}
+        <!-- прошедший -->
+        <div
+          v-else-if="isPastSlot(slot)"
+          class="slot expired"
+        >
+          {{ formatTime(slot.startTime) }}
+          —
+          {{ formatTime(slot.endTime) }}
+        </div>
+
+        <!-- занятый -->
+        <div
+          v-else
+          class="slot booked"
+        >
+          {{ formatTime(slot.startTime) }}
+          —
+          {{ formatTime(slot.endTime) }}
         </div>
 
       </template>
@@ -198,54 +299,76 @@ function formatTime(dateTime) {
   >
     <div class="modal-content">
 
-      <h3>Запись к врачу</h3>
-
-      <!-- STEP 1: booking -->
       <template v-if="!appointmentId">
 
-        <p v-if="doctor">
+        <h3>Подтверждение записи</h3>
+
+        <p>
           <strong>Врач:</strong>
-          {{ doctor.lastName }} {{ doctor.firstName }}
+          {{ doctor.lastName }}
+          {{ doctor.firstName }}
         </p>
 
         <p>
           <strong>Время:</strong>
-          {{ formatTime(selectedSlot.startTime) }} -
+          {{ formatTime(selectedSlot.startTime) }}
+          —
           {{ formatTime(selectedSlot.endTime) }}
         </p>
-        
-        <p v-if="doctor">
-          <strong>Стоимость записи:</strong>
-            {{ doctor.consultationPrice ? doctor.consultationPrice + ' руб.' : 'бесплатно' }}
+
+        <p>
+          <strong>Стоимость:</strong>
+          {{
+            doctor.consultationPrice
+              ? doctor.consultationPrice + ' ₽'
+              : 'Бесплатно'
+          }}
         </p>
-        
+
         <button
           class="btn"
           :disabled="loading"
           @click="book"
         >
-          {{ loading ? 'Создание...' : 'Подтвердить запись' }}
+          {{
+            loading
+              ? 'Создание...'
+              : 'Подтвердить запись'
+          }}
         </button>
 
       </template>
 
-      <!-- STEP 2: payment -->
+      <!-- SUCCESS -->
       <template v-else>
 
-        <p class="success-text">
-          Запись успешно создана
-        </p>
+        <div class="success-state">
 
-        <button
-          class="btn primary"
-          @click="pay"
-        >
-          Оплатить приём
-        </button>
+          <div class="success-icon">
+            ✓
+          </div>
+
+          <h3>Запись успешно создана</h3>
+
+          <p>
+            Ваш приём успешно забронирован
+          </p>
+
+          <button
+            class="btn primary"
+            @click="pay"
+          >
+            Оплатить приём
+          </button>
+
+        </div>
 
       </template>
 
-      <button class="btn secondary" @click="closeModal">
+      <button
+        class="btn secondary"
+        @click="closeModal"
+      >
         Закрыть
       </button>
 

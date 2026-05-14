@@ -82,6 +82,15 @@ const paymentStatus = computed(() => {
   return 'Не оплачено'
 })
 
+const canCancel = computed(() => {
+  if (!appointment.value) return false
+
+  return (
+    appointment.value.status === 'BOOKED' &&
+    new Date(appointment.value.timeSlot.startTime) > new Date()
+  )
+})
+
 const paymentStatusClass = computed(() => {
   if (!appointment.value) return ''
 
@@ -232,7 +241,7 @@ async function pay() {
 
         <!-- отменить -->
         <button
-          v-if="appointment.status === 'BOOKED'"
+          v-if="canCancel"
           class="btn danger"
           @click="cancelAppointment"
         >

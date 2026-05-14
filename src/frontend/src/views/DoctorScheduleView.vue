@@ -13,6 +13,8 @@ const hasTemplates = ref(false)
 const success = ref('')
 const error = ref('')
 
+const doctor = ref(null)
+
 const daysOfWeek = [
   'MONDAY',
   'TUESDAY',
@@ -39,6 +41,10 @@ async function loadData() {
       params: { doctorId }
     })
 
+    const res2 = await http.get(`/api/doctors/${doctorId}`)
+    doctor.value = res2.data
+    
+    
     templates.value = res.data
     hasTemplates.value = templates.value.length > 0
 
@@ -103,7 +109,14 @@ onMounted(loadData)
   <div class="container">
 
     <div class="page-header">
-      <h1>Расписание врача {{ doctorId }}</h1>
+      <h1 v-if="doctor">
+        Расписание врача
+        {{ doctor.lastName }} {{ doctor.firstName }} {{ doctor.middleName }}
+      </h1>
+
+      <h1 v-else>
+        Загрузка расписания врача...
+      </h1>
     </div>
 
     <div v-if="success" class="alert success">
@@ -153,11 +166,13 @@ onMounted(loadData)
       <div class="generate-form">
         <label>Сгенерировать расписание на дней вперед:</label>
 
-        <input
-          v-model="daysAhead"
-          type="number"
-          min="1"
-        >
+        <div class="generate-input-wrapper">
+          <input
+            v-model="daysAhead"
+            type="number"
+            min="1"
+          >
+        </div>
 
         <button
           class="btn primary"
@@ -220,9 +235,11 @@ onMounted(loadData)
           >
         </div>
 
-        <button type="submit" class="btn primary">
-          Создать шаблон
-        </button>
+        <div class="form-actions">
+          <button type="submit" class="btn primary">
+            Создать шаблон
+          </button>
+        </div>
 
       </form>
     </div>

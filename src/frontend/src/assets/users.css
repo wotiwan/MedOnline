@@ -1,7 +1,7 @@
 .users-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
     margin-top: 20px;
 }
 
@@ -11,25 +11,22 @@
 .user-card {
     background: white;
     border-radius: 16px;
-    padding: 20px;
+    padding: 18px;
 
     border: 1px solid #eef2f7;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 
-    transition: 0.2s ease;
+    min-height: 220px;
 }
-
-/* без hover (как ты и хотел) */
 
 /* =========================
    INFO
    ========================= */
 .user-info {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .user-email {
@@ -40,7 +37,7 @@
 
 .user-name {
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 4px;
     color: #0f172a;
 }
@@ -51,35 +48,54 @@
 }
 
 /* =========================
-   ACTIONS
+   ACTIONS WRAPPER
    ========================= */
 .user-actions {
+    margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
-.horizontal-buttons-container {
+.btn-row {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
+.btn-row .btn {
+    flex: 1;
+    min-width: 120px;
+}
+
 /* =========================
-   BUTTONS (единая система)
+   BUTTONS BASE (ВАЖНО)
    ========================= */
 .btn {
-    padding: 10px 16px;
+    padding: 9px 12px;
     border-radius: 10px;
     border: none;
     cursor: pointer;
+
     font-weight: 500;
-    width: 100%;
+    font-size: 13px;
 
     transition: all 0.2s ease;
+
+    width: auto; /* 🔥 убрали растяжение */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* primary */
+/* full width only when needed */
+.btn.block {
+    width: 100%;
+}
+
+/* =========================
+   PRIMARY
+   ========================= */
 .btn.primary {
     background: #0f766e;
     color: white;
@@ -91,7 +107,9 @@
     transform: translateY(-1px);
 }
 
-/* secondary */
+/* =========================
+   SECONDARY
+   ========================= */
 .btn.secondary {
     background: #e2e8f0;
     color: #1e293b;
@@ -101,11 +119,12 @@
     background: #cbd5e1;
 }
 
-/* danger */
+/* =========================
+   DANGER
+   ========================= */
 .btn.danger {
     background: #dc2626;
     color: white;
-    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
 }
 
 .btn.danger:hover {
@@ -130,14 +149,6 @@
     border-radius: 8px;
     border: 1px solid #d1d5db;
     font-size: 14px;
-
-    transition: 0.15s ease;
-}
-
-.filter-form select:focus {
-    outline: none;
-    border-color: #0f766e;
-    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
 }
 
 /* =========================
@@ -151,4 +162,42 @@
     padding: 12px;
     border-radius: 10px;
     margin-bottom: 20px;
+}
+
+/* =========================
+   FILTER ROW (новое)
+   ========================= */
+.filter-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    margin-bottom: 20px;
+}
+
+/* =========================
+   SEARCH (унифицировано)
+   ========================= */
+.search-block {
+    flex: 1;
+    min-width: 240px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 9px 12px;
+
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+
+    font-size: 14px;
+
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
 }
