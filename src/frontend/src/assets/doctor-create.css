@@ -137,3 +137,28 @@
 .user-info-card strong {
     color: #0f172a;
 }
+
+/* =========================
+   PRICE INPUT
+   ========================= */
+
+.price-input-wrapper {
+    position: relative;
+}
+
+.price-input-wrapper input {
+    padding-right: 42px;
+}
+
+.price-suffix {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+
+    pointer-events: none;
+}

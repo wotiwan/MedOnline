@@ -19,7 +19,8 @@ const form = ref({
   lastName: '',
   birthDate: '',
   specializationId: '',
-  description: ''
+  description: '',
+  consultationPrice: ''
 })
 
 onMounted(async () => {

@@ -15,7 +15,8 @@ const specializations = ref([])
 const form = ref({
   userId: userId,
   specializationId: '',
-  description: ''
+  description: '',
+  consultationPrice: ''
 })
 
 const error = ref('')
@@ -104,7 +105,24 @@ async function createDoctor() {
             </option>
           </select>
         </div>
+        
+        <div class="form-group">
+          <label>Стоимость приёма</label>
 
+          <div class="price-input-wrapper">
+            <input
+              v-model.number="form.consultationPrice"
+              type="number"
+              min="0"
+              step="100"
+              placeholder="Например: 2500"
+              required
+            >
+
+            <span class="price-suffix">₽</span>
+          </div>
+        </div>
+        
         <div class="form-group">
           <label>Описание</label>
 

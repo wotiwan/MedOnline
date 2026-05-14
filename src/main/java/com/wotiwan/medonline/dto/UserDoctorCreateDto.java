@@ -3,8 +3,10 @@ package com.wotiwan.medonline.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Value;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Value
@@ -27,6 +29,9 @@ public class UserDoctorCreateDto {
 
     @NotNull(message = "Дата рождения обязательна")
     LocalDate birthDate;
+
+    @PositiveOrZero
+    BigDecimal consultationPrice;
 
     @NotNull(message = "Специализация обязательна")
     Integer specializationId;
