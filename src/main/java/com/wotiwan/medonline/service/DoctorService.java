@@ -16,6 +16,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,6 +100,18 @@ public class DoctorService {
 
         appointment.setStatus(dto.status());
         appointment.setConsultationResult(dto.consultationResult());
+    }
+
+    public void updateDoctorConsultationPrice(Integer doctorId, Integer price) {
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor with id=%d not found".formatted(doctorId)));
+
+        if (price < 0) {
+            throw new IllegalArgumentException("Price can not be less then 0!");
+        }
+
+        doctor.setConsultationPrice(BigDecimal.valueOf(price));
+
     }
 
 }

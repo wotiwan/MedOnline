@@ -11,12 +11,13 @@ const errors = ref([])
 const selectedRole = ref(route.query.role || 'ALL')
 const search = ref('')
 
-const rolesFilter = [
-  'ALL',
-  'PATIENT',
-  'DOCTOR',
-  'ADMIN'
-]
+// редактирование цены
+const editingPriceUserId = ref(null)
+const priceDraft = ref('')
+
+const doctorPrices = ref({})
+
+const rolesFilter = ['ALL', 'PATIENT', 'DOCTOR', 'ADMIN']
 
 // ======================
 // загрузка пользователей
@@ -26,7 +27,6 @@ async function loadUsers() {
     errors.value = []
 
     const params = {}
-
     if (selectedRole.value !== 'ALL') {
       params.role = selectedRole.value
     }
@@ -34,13 +34,26 @@ async function loadUsers() {
     const res = await http.get('/api/admin/users', { params })
     users.value = res.data
 
-  } catch (e) {
+    await loadDoctorPrices()
+    
+  } catch {
     errors.value = ['Ошибка загрузки пользователей']
   }
 }
 
+async function loadDoctorPrices() {
+  const doctorUsers = users.value.filter(u => u.role === 'DOCTOR')
+
+  await Promise.all(
+    doctorUsers.map(async (u) => {
+      const res = await http.get(`/api/doctors/${u.id}`)
+      doctorPrices.value[u.id] = res.data.consultationPrice
+    })
+  )
+}
+
 // ======================
-// смена роли
+// роли
 // ======================
 async function changeRole(userId, role) {
   try {
@@ -66,6 +79,40 @@ async function deleteUser(userId) {
 }
 
 // ======================
+// цена врача
+// ======================
+function startEditPrice(user) {
+  editingPriceUserId.value = user.id
+  priceDraft.value = user.consultationPrice ?? ''
+}
+
+function cancelEditPrice() {
+  editingPriceUserId.value = null
+  priceDraft.value = ''
+}
+
+async function savePrice(userId) {
+  const value = Number(priceDraft.value)
+
+  if (Number.isNaN(value) || value < 0) {
+    errors.value = ['Цена не может быть отрицательной']
+    return
+  }
+
+  try {
+    await http.patch(`/api/doctors/${userId}/price`, null, {
+      params: { price: value }
+    })
+
+    editingPriceUserId.value = null
+    priceDraft.value = ''
+    await loadUsers()
+  } catch {
+    errors.value = ['Ошибка обновления цены']
+  }
+}
+
+// ======================
 // label
 // ======================
 function roleLabel(role) {
@@ -73,22 +120,16 @@ function roleLabel(role) {
 }
 
 // ======================
-// фильтр роли (backend)
+// lifecycle
 // ======================
 watch(selectedRole, loadUsers)
-
-// ======================
-// загрузка
-// ======================
 onMounted(loadUsers)
 
 // ======================
-// SEARCH (frontend)
+// search
 // ======================
 const filteredUsers = computed(() => {
-  if (!search.value.trim()) {
-    return users.value
-  }
+  if (!search.value.trim()) return users.value
 
   const q = search.value.toLowerCase()
 
@@ -110,43 +151,36 @@ const filteredUsers = computed(() => {
       <h1>Пользователи</h1>
     </div>
 
-    <!-- ошибки -->
+    <!-- errors -->
     <div v-if="errors.length" class="alert error">
       <div v-for="err in errors" :key="err">
         {{ err }}
       </div>
     </div>
 
-    <!-- FILTERS -->
+    <!-- filters -->
     <div class="filter-row">
 
       <div class="filter-form">
         <label>Роль:</label>
-
         <select v-model="selectedRole">
-          <option
-            v-for="role in rolesFilter"
-            :key="role"
-            :value="role"
-          >
+          <option v-for="role in rolesFilter" :key="role" :value="role">
             {{ role }}
           </option>
         </select>
       </div>
 
-      <!-- SEARCH -->
       <div class="search-block">
         <input
           v-model="search"
-          type="text"
-          placeholder="Поиск по имени или email..."
           class="search-input"
+          placeholder="Поиск..."
         />
       </div>
 
     </div>
 
-    <!-- список -->
+    <!-- list -->
     <div class="users-grid">
 
       <div
@@ -156,51 +190,75 @@ const filteredUsers = computed(() => {
       >
 
         <div class="user-info">
-          <div class="user-email">
-            {{ user.email }}
-          </div>
-
+          <div class="user-email">{{ user.email }}</div>
           <div class="user-name">
             {{ user.lastName }} {{ user.firstName }} {{ user.middleName }}
           </div>
-
-          <div class="user-role">
-            {{ roleLabel(user.role) }}
-          </div>
+          <div class="user-role">{{ roleLabel(user.role) }}</div>
         </div>
 
+        <!-- PRICE BLOCK (ТОЛЬКО ДЛЯ ВРАЧЕЙ) -->
+        <div v-if="user.role === 'DOCTOR'" class="price-block">
+
+          <div v-if="editingPriceUserId !== user.id" class="price-view">
+            <span>
+              Цена:
+              <b>
+                {{ doctorPrices[user.id] ?? '—' }} ₽
+              </b>
+            </span>
+
+            <button class="btn secondary" @click="startEditPrice(user)">
+              Изменить
+            </button>
+          </div>
+
+          <div v-else class="price-edit">
+            <input
+              v-model="priceDraft"
+              type="number"
+              min="0"
+              class="price-input"
+            />
+
+            <div class="price-actions">
+              <button class="btn primary" @click="savePrice(user.id)">
+                Сохранить
+              </button>
+
+              <button class="btn secondary" @click="cancelEditPrice">
+                Отмена
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- actions -->
         <div class="user-actions">
 
-          <!-- PRIMARY ACTIONS -->
           <div class="btn-row">
 
             <router-link
               v-if="user.role === 'DOCTOR'"
               :to="`/admin/schedule/doctor/${user.id}`"
             >
-              <button class="btn primary">
-                Расписание
-              </button>
+              <button class="btn primary">Расписание</button>
             </router-link>
 
             <router-link
               v-if="user.role === 'PATIENT'"
               :to="`/admin/doctors/create?userId=${user.id}`"
             >
-              <button class="btn primary">
-                Сделать врачом
-              </button>
+              <button class="btn primary">Сделать врачом</button>
             </router-link>
 
             <router-link :to="`/admin/users/${user.id}/edit`">
-              <button class="btn secondary">
-                Редактировать
-              </button>
+              <button class="btn secondary">Редактировать</button>
             </router-link>
 
           </div>
 
-          <!-- ADMIN ACTIONS -->
           <div class="btn-row">
 
             <button
@@ -211,10 +269,7 @@ const filteredUsers = computed(() => {
               Сделать админом
             </button>
 
-            <button
-              class="btn danger"
-              @click="deleteUser(user.id)"
-            >
+            <button class="btn danger" @click="deleteUser(user.id)">
               Удалить
             </button>
 
@@ -228,4 +283,5 @@ const filteredUsers = computed(() => {
 
   </div>
 </template>
+
 <style scoped src="@/assets/users.css"></style>

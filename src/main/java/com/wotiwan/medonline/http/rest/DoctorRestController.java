@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,14 @@ public class DoctorRestController {
     @GetMapping("/doctors/{doctorId}")
     public DoctorReadDto getDoctor(@PathVariable Integer doctorId) {
         return doctorService.findById(doctorId);
+    }
+
+    @PatchMapping("/doctors/{doctorId}/price")
+    public ResponseEntity<ResponseMessage<?>> updateDoctor(@PathVariable Integer doctorId,
+                                      @RequestParam Integer price) {
+        doctorService.updateDoctorConsultationPrice(doctorId, price);
+
+        return ResponseEntity.ok().body(new ResponseMessage<>("Стоимость консультации обновлена!"));
     }
 
     // Возвращает информацию о доступных слотах записи запрашиваемого врача
