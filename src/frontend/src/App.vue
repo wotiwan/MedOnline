@@ -1,5 +1,6 @@
 <script setup>
 import { globalError } from '@/stores/errorStore'
+import AppFooter from './components/AppFooter.vue';
 
 function clearError() {
   globalError.value = ''
@@ -7,13 +8,22 @@ function clearError() {
 </script>
 
 <template>
-  <div v-if="globalError" class="error-overlay">
-    <div class="error-box">
-      <p>{{ globalError }}</p>
-      <button class="btn" @click="clearError">Закрыть</button>
+  <div class="app-layout">
+
+    <div v-if="globalError" class="error-overlay">
+      <div class="error-box">
+        <p>{{ globalError }}</p>
+        <button class="btn" @click="clearError">Закрыть</button>
+      </div>
     </div>
+
+    <main class="app-content">
+      <router-view />
+    </main>
+
+    <AppFooter />
+
   </div>
-  <router-view />
 </template>
 
 <style scoped>
@@ -41,4 +51,15 @@ function clearError() {
     max-width: 420px;
     text-align: center;
   }
+
+  .app-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app-content {
+    flex: 1;
+  }
+
 </style>

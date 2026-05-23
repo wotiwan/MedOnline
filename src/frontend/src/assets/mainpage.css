@@ -135,8 +135,11 @@
 }
 
 .spec-skeleton {
-    height: 70px;
+    height: 88px;
+
     border-radius: 18px;
+
+    /* border: 1px solid #e5e7eb; */
 
     background: linear-gradient(
         90deg,
@@ -146,6 +149,9 @@
     );
 
     background-size: 400% 100%;
+
+    /* box-shadow: 0 6px 16px rgba(0,0,0,0.05); */
+
     animation: shimmer 1.2s infinite;
 }
 
@@ -181,6 +187,41 @@
 }
 
 .search-input:focus {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+/* =========================
+   FILTER BAR
+   ========================= */
+
+.filters {
+    display: flex;
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 20px;
+}
+
+/* общий стиль селектов */
+.filter-select {
+    padding: 10px 12px;
+
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+
+    background: white;
+
+    font-size: 14px;
+
+    min-width: 180px;
+
+    transition: 0.2s ease;
+}
+
+.filter-select:focus {
     outline: none;
     border-color: #0f766e;
     box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);

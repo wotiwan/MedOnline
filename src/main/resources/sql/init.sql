@@ -12,10 +12,9 @@ CREATE TABLE users (
 
 create table specialization (
     id SERIAL primary key ,
-    name varchar(255) not null unique
+    name varchar(255) not null unique ,
+    profile_name varchar(255) not null
 );
-
-
 
 CREATE TABLE doctors (
      user_id INT PRIMARY KEY,

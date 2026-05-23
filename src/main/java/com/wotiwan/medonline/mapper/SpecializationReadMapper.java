@@ -11,7 +11,8 @@ public class SpecializationReadMapper implements Mapper<Specialization, Speciali
     public SpecializationReadDto map(Specialization object) {
         return new SpecializationReadDto(
                 object.getId(),
-                object.getName()
+                object.getName(),
+                object.getProfileName()
         );
     }
 }

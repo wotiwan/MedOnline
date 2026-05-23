@@ -20,20 +20,17 @@ async function login() {
 
     localStorage.setItem('token', res.data.token)
 
-    // если всё ок → на главную
     router.push('/main')
-
   } catch (e) {
     error.value = 'Неверный email или пароль'
   }
 }
 </script>
 
-<style scoped src="@/assets/login.css"></style>
-
 <template>
   <div class="main-container">
     <div class="login-container">
+
       <h2>Вход в портал</h2>
 
       <div v-if="error" class="error">
@@ -44,20 +41,35 @@ async function login() {
 
         <div class="form-group">
           <label>Email</label>
-          <input v-model="username" type="text" required>
+          <input v-model="username" type="text" required />
         </div>
 
         <div class="form-group">
           <label>Пароль</label>
-          <input v-model="password" type="password" required>
+          <input v-model="password" type="password" required />
         </div>
 
-        <button type="submit">Войти</button>
+        <button type="submit" class="login-btn">
+          Войти
+        </button>
+
       </form>
 
-      <router-link to="/register" class="register-link">
-        Нет аккаунта? Зарегистрироваться
-      </router-link>
+      <!-- ссылки -->
+      <div class="auth-links">
+
+        <router-link to="/register" class="link">
+          Нет аккаунта? Зарегистрироваться
+        </router-link>
+
+        <router-link to="/register" class="link subtle">
+          Забыли пароль?
+        </router-link>
+
+      </div>
+
     </div>
   </div>
 </template>
+
+<style scoped src="@/assets/login.css"></style>

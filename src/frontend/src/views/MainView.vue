@@ -4,30 +4,76 @@ import http from '@/api/axios'
 import AppHeader from '@/components/AppHeader.vue'
 import '@/assets/base.css'
 
+const MIN_LOADING_TIME = 1200 // 1.2 секунды
+
 const specializations = ref([])
 const loading = ref(true)
+
 const search = ref('')
 
+const selectedProfile = ref('')
+const selectedSpecialization = ref('')
+
+// ======================
+// загрузка данных
+// ======================
 onMounted(async () => {
+  const start = Date.now()
+
   try {
     const res = await http.get('/api/specializations')
     specializations.value = res.data
   } finally {
-    loading.value = false
+    const elapsed = Date.now() - start
+    const remaining = MIN_LOADING_TIME - elapsed
+
+    setTimeout(() => {
+      loading.value = false
+    }, remaining > 0 ? remaining : 0)
   }
 })
 
 // ======================
-// фильтрация на фронте
+// уникальные профили
 // ======================
-const filteredSpecializations = computed(() => {
-  if (!search.value.trim()) {
+const profiles = computed(() => {
+  return [...new Set(specializations.value.map(s => s.profileName))]
+})
+
+// ======================
+// специализации, зависящие от профиля
+// ======================
+const filteredByProfile = computed(() => {
+  if (!selectedProfile.value) {
     return specializations.value
   }
 
-  return specializations.value.filter(s =>
-    s.name.toLowerCase().includes(search.value.toLowerCase())
+  return specializations.value.filter(
+    s => s.profileName === selectedProfile.value
   )
+})
+
+// ======================
+// список специализаций для dropdown (зависит от профиля)
+// ======================
+const availableSpecializations = computed(() => {
+  return filteredByProfile.value
+})
+
+// ======================
+// финальная фильтрация карточек
+// ======================
+const filteredSpecializations = computed(() => {
+  return availableSpecializations.value.filter(s => {
+    const matchSearch =
+      s.name.toLowerCase().includes(search.value.toLowerCase())
+
+    const matchSpec =
+      !selectedSpecialization.value ||
+      s.id == selectedSpecialization.value
+
+    return matchSearch && matchSpec
+  })
 })
 </script>
 
@@ -46,19 +92,42 @@ const filteredSpecializations = computed(() => {
       </div>
     </div>
 
-    <!-- SEARCH -->
-    <div class="search-block">
+    <!-- FILTERS -->
+    <div class="filters">
+
+      <!-- SEARCH -->
       <input
         v-model="search"
         type="text"
         placeholder="Поиск специализации..."
         class="search-input"
       />
+
+      <!-- PROFILE -->
+      <select v-model="selectedProfile" class="filter-select">
+        <option value="">Все профили</option>
+        <option v-for="p in profiles" :key="p" :value="p">
+          {{ p }}
+        </option>
+      </select>
+
+      <!-- SPECIALIZATION (зависит от профиля) -->
+      <select v-model="selectedSpecialization" class="filter-select">
+        <option value="">Все специализации</option>
+        <option
+          v-for="s in availableSpecializations"
+          :key="s.id"
+          :value="s.id"
+        >
+          {{ s.name }}
+        </option>
+      </select>
+
     </div>
 
     <!-- LOADING -->
     <div v-if="loading" class="loading-grid">
-      <div class="spec-skeleton" v-for="n in 6" :key="n"></div>
+      <div class="spec-skeleton" v-for="n in 16" :key="n"></div>
     </div>
 
     <!-- EMPTY -->
@@ -75,14 +144,12 @@ const filteredSpecializations = computed(() => {
         :href="`/doctors?specializationId=${s.id}`"
         class="spec-card"
       >
-
         <div class="spec-icon">+</div>
 
         <div class="spec-card-content">
           <h3>{{ s.name }}</h3>
           <span class="spec-link">Выбрать →</span>
         </div>
-
       </a>
 
     </div>

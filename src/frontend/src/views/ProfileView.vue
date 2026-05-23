@@ -1,10 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import http from '@/api/axios'
 import AppHeader from '@/components/AppHeader.vue'
 
 const user = ref(null)
 const appointments = ref([])
+
+const activeTab = ref('future') // 'future' | 'history'
+const tabLoading = ref(false)
 
 const isEditing = ref(false)
 
@@ -22,8 +25,14 @@ const form = ref({
 const specializationsMap = ref({})
 
 onMounted(async () => {
+  tabLoading.value = true
+
   const res = await http.get('/api/profile')
 
+  setTimeout(() => {
+    tabLoading.value = false
+  }, 600)
+  
   console.log(res.data)
 
   user.value = res.data.user
@@ -68,6 +77,28 @@ onMounted(async () => {
       return acc
     },
     {}
+  )
+})
+
+// будущие записи (активные)
+const futureAppointments = computed(() => {
+  const now = new Date()
+
+  return appointments.value.filter(a => {
+    const start = new Date(a.timeSlot.startTime)
+
+    return (
+      (a.status === 'BOOKED' || a.status === 'CONFIRMED') &&
+      start > now
+    )
+  })
+})
+
+// завершённые (отменённые + завершённые приёмы)
+const finishedAppointments = computed(() => {
+  return appointments.value.filter(a =>
+    a.status === 'CANCELLED' ||
+    a.status === 'COMPLETED'
   )
 })
 
@@ -122,7 +153,25 @@ function getPaymentStatus(appointment) {
     return 'БЕСПЛАТНО'
   }
 
-  // оплачено (хотя бы один success)
+  // ошибка возврата
+  const hasRefundFailed = payments.some(
+    p => p.status === 'REFUND_FAILED'
+  )
+
+  if (hasRefundFailed) {
+    return 'ОШИБКА ВОЗВРАТА'
+  }
+
+  // возврат
+  const hasRefunded = payments.some(
+    p => p.status === 'REFUNDED'
+  )
+
+  if (hasRefunded) {
+    return 'ВОЗВРАЩЕНО'
+  }
+
+  // успешно оплачено
   const hasSucceeded = payments.some(
     p => p.status === 'SUCCEEDED'
   )
@@ -137,20 +186,59 @@ function getPaymentStatus(appointment) {
 function getPaymentClass(appointment) {
   const payments = appointment.payments || []
 
+  // бесплатно
   if (!appointment.price || appointment.price === 0) {
     return 'free'
   }
 
-  const hasSucceeded = payments.some(
-    p => p.status === 'SUCCEEDED'
-  )
+  // ошибка возврата
+  if (
+    payments.some(p => p.status === 'REFUND_FAILED')
+  ) {
+    return 'cancelled'
+  }
 
-  if (hasSucceeded) {
+  // возврат
+  if (
+    payments.some(p => p.status === 'REFUNDED')
+  ) {
+    return 'free'
+  }
+
+  // оплачено
+  if (
+    payments.some(p => p.status === 'SUCCEEDED')
+  ) {
     return 'booked'
   }
 
   return 'cancelled'
 }
+
+function getAppointmentStatusLabel(status) {
+  const map = {
+    BOOKED: 'ЗАПЛАНИРОВАНА',
+    CANCELLED: 'ОТМЕНЕНА',
+    COMPLETED: 'ЗАВЕРШЕНА'
+  }
+
+  return map[status] || status
+}
+
+async function switchTab(tab) {
+  if (activeTab.value === tab) return
+
+  tabLoading.value = true
+
+  activeTab.value = tab
+
+  await new Promise(resolve =>
+    setTimeout(resolve, 800)
+  )
+
+  tabLoading.value = false
+}
+
 </script>
 
 <template>
@@ -172,7 +260,7 @@ function getPaymentClass(appointment) {
         <p><strong>Отчество:</strong> {{ user.middleName }}</p>
         <p><strong>Фамилия:</strong> {{ user.lastName }}</p>
         <p><strong>Дата рождения:</strong> {{ user.birthDate }}</p>
-        <p><strong>Роль:</strong> {{ user.role }}</p>
+        <!-- <p><strong>Роль:</strong> {{ user.role }}</p> -->
       </div>
 
       <button v-if="!isEditing" class="btn primary" @click="openEdit">
@@ -218,57 +306,165 @@ function getPaymentClass(appointment) {
 
     <!-- APPOINTMENTS -->
     <div class="appointments-section">
+      
+      <div class="appointments-section">
 
-      <h2>Мои записи</h2>
+        <h2>Мои записи</h2>
 
-      <div v-if="appointments.length === 0" class="empty-state">
-        У вас пока нет записей
+        <!-- TABS -->
+        <div class="tabs">
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'future' }"
+          @click="switchTab('future')"
+        >
+          Будущие
+        </button>
+
+        <button
+          class="tab-btn"
+          :class="{ active: activeTab === 'history' }"
+          @click="switchTab('history')"
+        >
+          История
+        </button>
       </div>
 
-      <div v-else class="appointments-grid">
+        <!-- EMPTY STATE -->
+        <div v-if="appointments.length === 0" class="empty-state">
+          У вас пока нет записей
+        </div>
 
-        <div
-          v-for="a in appointments"
-          :key="a.id"
-          class="appointment-card"
-          @click="$router.push(`/appointments/${a.id}`)"
-        >
-
-          <div class="appointment-info">
-
-            <p>
-              <strong>Врач:</strong>
-              {{ a.doctor.lastName + " " + a.doctor.firstName + " " + a.doctor.middleName }}
-            </p>
-
-            <p>
-              <strong>Специализация:</strong>
-              {{ specializationsMap[a.doctor.specializationId] }}
-            </p>
-
-            <p>
-              <strong>Дата:</strong>
-              {{ formatDate(a.timeSlot.startTime) }}
-            </p>
-
-            <p>
-              <strong>Время:</strong>
-              {{ formatTime(a.timeSlot.startTime) }} -
-              {{ formatTime(a.timeSlot.endTime) }}
-            </p>
-
+        <!-- FUTURE -->
+        <div v-if="activeTab === 'future'">
+          
+          <!-- SKELETON -->
+          <div
+            v-if="tabLoading"
+            class="appointments-grid"
+          >
+            <div
+              v-for="n in 3"
+              :key="n"
+              class="appointment-skeleton"
+            ></div>
           </div>
 
-          <div class="appointment-status">
-            <span class="status" :class="a.status.toLowerCase()">
-              {{ a.status }}
-            </span>
-            <span
-                class="status"
-                :class="getPaymentClass(a)"
-              >
-                {{ getPaymentStatus(a) }}
-              </span>
+          <div
+            v-else-if="futureAppointments.length === 0"
+            class="empty-state"
+          >
+            Нет будущих записей
+          </div>
+
+          <div v-else class="appointments-grid">
+            <div
+              v-for="a in futureAppointments"
+              :key="a.id"
+              class="appointment-card"
+              @click="$router.push(`/appointments/${a.id}`)"
+            >
+
+              <div class="appointment-info">
+                <p>
+                  <strong>Врач:</strong>
+                  {{ a.doctor.lastName + " " + a.doctor.firstName + " " + a.doctor.middleName }}
+                </p>
+
+                <p>
+                  <strong>Специализация:</strong>
+                  {{ specializationsMap[a.doctor.specializationId] }}
+                </p>
+
+                <p>
+                  <strong>Дата:</strong>
+                  {{ formatDate(a.timeSlot.startTime) }}
+                </p>
+
+                <p>
+                  <strong>Время:</strong>
+                  {{ formatTime(a.timeSlot.startTime) }} -
+                  {{ formatTime(a.timeSlot.endTime) }}
+                </p>
+              </div>
+
+              <div class="appointment-status">
+                <span class="status" :class="a.status.toLowerCase()">
+                  {{ getAppointmentStatusLabel(a.status) }}
+                </span>
+
+                <span class="status" :class="getPaymentClass(a)">
+                  {{ getPaymentStatus(a) }}
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- HISTORY -->
+        <div v-if="activeTab === 'history'">
+          <!-- SKELETON -->
+          <div
+            v-if="tabLoading"
+            class="appointments-grid"
+          >
+            <div
+              v-for="n in 3"
+              :key="n"
+              class="appointment-skeleton"
+            ></div>
+          </div>
+          <div
+            v-else-if="finishedAppointments.length === 0"
+            class="empty-state"
+          >
+            История пуста
+          </div>
+
+          <div v-else class="appointments-grid">
+            <div
+              v-for="a in finishedAppointments"
+              :key="a.id"
+              class="appointment-card"
+              @click="$router.push(`/appointments/${a.id}`)"
+            >
+
+              <div class="appointment-info">
+                <p>
+                  <strong>Врач:</strong>
+                  {{ a.doctor.lastName + " " + a.doctor.firstName + " " + a.doctor.middleName }}
+                </p>
+
+                <p>
+                  <strong>Специализация:</strong>
+                  {{ specializationsMap[a.doctor.specializationId] }}
+                </p>
+
+                <p>
+                  <strong>Дата:</strong>
+                  {{ formatDate(a.timeSlot.startTime) }}
+                </p>
+
+                <p>
+                  <strong>Время:</strong>
+                  {{ formatTime(a.timeSlot.startTime) }} -
+                  {{ formatTime(a.timeSlot.endTime) }}
+                </p>
+              </div>
+
+              <div class="appointment-status">
+                <span class="status" :class="a.status.toLowerCase()">
+                  {{ getAppointmentStatusLabel(a.status) }}
+                </span>
+
+                <span class="status" :class="getPaymentClass(a)">
+                  {{ getPaymentStatus(a) }}
+                </span>
+              </div>
+
+            </div>
           </div>
 
         </div>

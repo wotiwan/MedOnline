@@ -71,6 +71,22 @@ const paymentStatus = computed(() => {
     return 'Бесплатно'
   }
 
+  const hasRefundFailed = payments.some(
+    p => p.status === 'REFUND_FAILED'
+  )
+
+  if (hasRefundFailed) {
+    return 'Ошибка возврата'
+  }
+
+  const hasRefunded = payments.some(
+    p => p.status === 'REFUNDED'
+  )
+
+  if (hasRefunded) {
+    return 'Возвращено'
+  }
+
   const hasSucceeded = payments.some(
     p => p.status === 'SUCCEEDED'
   )
@@ -103,11 +119,21 @@ const paymentStatusClass = computed(() => {
     return 'free'
   }
 
-  const hasSucceeded = payments.some(
-    p => p.status === 'SUCCEEDED'
-  )
+  if (
+    payments.some(p => p.status === 'REFUND_FAILED')
+  ) {
+    return 'refund-failed'
+  }
 
-  if (hasSucceeded) {
+  if (
+    payments.some(p => p.status === 'REFUNDED')
+  ) {
+    return 'refunded'
+  }
+
+  if (
+    payments.some(p => p.status === 'SUCCEEDED')
+  ) {
     return 'paid'
   }
 
@@ -135,6 +161,17 @@ async function pay() {
 
   window.location.href = paymentUrl
 }
+
+function getAppointmentStatusLabel(status) {
+  const map = {
+    BOOKED: 'Запланирована',
+    CANCELLED: 'Отменена',
+    COMPLETED: 'Завершена'
+  }
+
+  return map[status] || status
+}
+
 </script>
 
 <template>
@@ -166,7 +203,7 @@ async function pay() {
           class="status"
           :class="appointment.status.toLowerCase()"
         >
-          {{ appointment.status }}
+          {{ getAppointmentStatusLabel(appointment.status) }}
         </span>
 
       </div>
@@ -208,6 +245,16 @@ async function pay() {
           <span class="payment-value">
             {{ paymentStatus }}
           </span>
+        </div>
+        <div
+          v-if="paymentStatus === 'Ошибка возврата'"
+          class="support-warning"
+        >
+          Возникла проблема при возврате средств.
+
+          <button class="support-btn">
+            Связаться с поддержкой
+          </button>
         </div>
 
       </div>

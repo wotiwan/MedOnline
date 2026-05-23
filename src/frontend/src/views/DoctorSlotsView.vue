@@ -6,6 +6,15 @@ import AppHeader from '@/components/AppHeader.vue'
 
 const route = useRoute()
 
+const isGuest = ref(false)
+
+const guestForm = ref({
+  firstName: '',
+  lastName: '',
+  birthDate: '',
+  phone: ''
+})
+
 const doctorId = route.query.doctorId
 
 const doctor = ref(null)
@@ -20,6 +29,10 @@ const showModal = ref(false)
 const appointmentId = ref(null)
 const loading = ref(false)
 
+const slotsLoading = ref(true)
+
+const MIN_LOADING_TIME = 1200
+
 // ======================
 // загрузка врача
 // ======================
@@ -32,11 +45,25 @@ async function loadDoctor() {
 // загрузка слотов
 // ======================
 async function loadSlots() {
-  const res = await http.get(`/api/doctors/${doctorId}/slots`, {
-    params: { date: date.value }
-  })
+  slotsLoading.value = true
 
-  slots.value = res.data.timeSlots
+  const start = Date.now()
+
+  try {
+    const res = await http.get(`/api/doctors/${doctorId}/slots`, {
+      params: { date: date.value }
+    })
+
+    slots.value = res.data.timeSlots
+
+  } finally {
+    const elapsed = Date.now() - start
+    const remaining = MIN_LOADING_TIME - elapsed
+
+    setTimeout(() => {
+      slotsLoading.value = false
+    }, remaining > 0 ? remaining : 0)
+  }
 }
 
 // ======================
@@ -90,6 +117,22 @@ async function book() {
   loading.value = true
 
   try {
+
+    // Гость
+    if (isGuest.value) {
+      setTimeout(() => {
+        appointmentId.value = 'GUEST_FAKE_' + Date.now()
+
+        selectedSlot.value.isBooked = true
+        loadSlots()
+
+        loading.value = false
+      }, 600)
+
+      return
+    }
+
+    // обычный пользователь
     const res = await http.post('/api/appointments/book', null, {
       params: {
         slotId: selectedSlot.value.id
@@ -99,7 +142,6 @@ async function book() {
     appointmentId.value = res.data
 
     selectedSlot.value.isBooked = true
-
     await loadSlots()
 
   } finally {
@@ -137,6 +179,7 @@ onMounted(async () => {
     loadDoctor(),
     loadSlots()
   ])
+  checkAuth()
 })
 
 watch(date, loadSlots)
@@ -156,6 +199,14 @@ function formatTime(dateTime) {
 // ======================
 function isPastSlot(slot) {
   return new Date(slot.startTime) <= new Date()
+}
+
+// ======================
+// Проверка авторизации
+// ======================
+function checkAuth() {
+  const token = localStorage.getItem('token')
+  isGuest.value = !token
 }
 </script>
 
@@ -248,11 +299,27 @@ function isPastSlot(slot) {
     <!-- SLOTS -->
     <div class="slots-grid">
 
-      <div v-if="!slots.length" class="empty-state">
+      <!-- SKELETON -->
+      <template v-if="slotsLoading">
+
+        <div
+          v-for="n in 32"
+          :key="n"
+          class="slot-skeleton"
+        ></div>
+
+      </template>
+
+      <!-- EMPTY -->
+      <div
+        v-else-if="!slots.length"
+        class="empty-state"
+      >
         Нет доступных слотов
       </div>
 
-      <template v-for="slot in slots" :key="slot.id">
+      <!-- REAL SLOTS -->
+      <template v-else v-for="slot in slots" :key="slot.id">
 
         <!-- свободный -->
         <button
@@ -324,10 +391,27 @@ function isPastSlot(slot) {
               : 'Бесплатно'
           }}
         </p>
+        
+        <!-- Гость -->
+        <div v-if="isGuest" class="guest-form">
+
+          <h4>Введите данные для записи</h4>
+
+          <input v-model="guestForm.firstName" placeholder="Имя" />
+          <input v-model="guestForm.lastName" placeholder="Фамилия" />
+          <input v-model="guestForm.birthDate" type="date" />
+          <input v-model="guestForm.phone" placeholder="Телефон" />
+          
+        </div>
 
         <button
           class="btn"
-          :disabled="loading"
+          :disabled="loading || (isGuest && (
+            !guestForm.firstName ||
+            !guestForm.lastName ||
+            !guestForm.birthDate ||
+            !guestForm.phone
+          ))"
           @click="book"
         >
           {{
