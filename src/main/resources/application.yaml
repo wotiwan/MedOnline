@@ -31,3 +31,11 @@ jwt:
 yookassa:
   shop-id: 1356576
   secret-key: test__g2COs_PDofZYggKHv4_2pikibxOKmh5OLzHTnsBoFE
+
+integration:
+  mis:
+    medesk:
+      base-url: https://api.medesk.ru
+      api-key: secret-key
+    onec:
+      base-url: https://demo.solutions.1c.ru/04/id143867_demo_poliklinika/1c_exchange.php
